@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GeoNEXA AI — AI Land Intelligence for Rwanda</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#112b28">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<style>
+/* =========================================
+   GEONEXA AI — HOME PAGE
+   ========================================= */
+
+:root {
+    --bg-0: #061312;
+    --bg-1: #091b19;
+    --bg-2: #112b28;
+    --surface: rgba(7, 25, 23, 0.94);
+    --border: #29433f;
+    --border-soft: #1c332f;
+    --text-hi: #f4f8f6;
+    --text-mid: #b7c9c4;
+    --text-lo: #7c948e;
+    --teal: #13b8ae;
+    --teal-bright: #29e0d3;
+    --gold: #d8b84c;
+    --gold-bright: #f0ce61;
+    --danger: #e57373;
+
+    --font-display: "Space Grotesk", Arial, sans-serif;
+    --font-body: "Inter", Arial, sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--font-body);
+    background:
+        radial-gradient(circle at 15% 0%, var(--bg-2) 0%, transparent 45%),
+        radial-gradient(circle at 85% 10%, #0f2624 0%, transparent 40%),
+        linear-gradient(180deg, var(--bg-1) 0%, var(--bg-0) 100%);
+    color: var(--text-hi);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+a { color: inherit; }
+
+.wrap {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 32px;
+}
+
+button, .btn { font-family: var(--font-body); }
+
+:focus-visible {
+    outline: 2px solid var(--teal-bright);
+    outline-offset: 3px;
+}
+
+/* =========================================
+   NAV
+   ========================================= */
+
+.nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(6, 19, 18, 0.82);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.nav-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 0;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+}
+
+.brand img {
+    width: 34px;
+    height: 34px;
+    mix-blend-mode: screen;
+}
+
+.brand span {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: 0.02em;
+    color: var(--text-hi);
+}
+
+.brand span em {
+    font-style: normal;
+    color: var(--teal-bright);
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    font-size: 15px;
+    color: var(--text-mid);
+}
+
+.nav-links a {
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.nav-links a:hover {
+    color: var(--text-hi);
+}
+
+.nav-cta {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.nav-cta a.login-link {
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-mid);
+    white-space: nowrap;
+}
+
+.nav-cta a.login-link:hover {
+    color: var(--text-hi);
+}
+
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 22px;
+    border-radius: 12px;
+    border: none;
+    background: linear-gradient(135deg, var(--teal-bright), var(--teal));
+    color: #04211e;
+    font-weight: 700;
+    font-size: 15px;
+    text-decoration: none;
+    white-space: nowrap;
+    box-shadow: 0 8px 22px rgba(19, 184, 174, 0.22);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 28px rgba(19, 184, 174, 0.32);
+}
+
+@media (max-width: 760px) {
+    .nav-links { display: none; }
+    .nav-cta a.login-link { display: none; }
+}
+
+/* =========================================
+   HERO
+   ========================================= */
+
+.hero {
+    padding: 88px 0 80px;
+}
+
+.hero-grid {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 60px;
+    align-items: center;
+}
+
+.eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 22px;
+}
+
+.eyebrow::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--gold);
+    box-shadow: 0 0 0 4px rgba(216, 184, 76, 0.18);
+}
+
+.hero h1 {
+    font-family: var(--font-display);
+    font-size: 54px;
+    line-height: 1.08;
+    font-weight: 700;
+    color: var(--text-hi);
+    margin-bottom: 22px;
+    letter-spacing: -0.01em;
+}
+
+.hero h1 .accent {
+    color: var(--teal-bright);
+}
+
+.hero p.lead {
+    font-size: 18px;
+    color: var(--text-mid);
+    max-width: 480px;
+    margin-bottom: 34px;
+}
+
+.hero-actions {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    flex-wrap: wrap;
+}
+
+.btn-primary.large {
+    padding: 16px 28px;
+    font-size: 16px;
+    border-radius: 14px;
+}
+
+.link-secondary {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-mid);
+    text-decoration: none;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 2px;
+    transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.link-secondary:hover {
+    color: var(--gold-bright);
+    border-color: var(--gold-bright);
+}
+
+.hero-trust {
+    display: flex;
+    gap: 28px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+}
+
+.hero-trust div {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-hi);
+}
+
+.hero-trust span {
+    display: block;
+    font-family: var(--font-body);
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--text-lo);
+    margin-top: 2px;
+}
+
+/* =========================================
+   SIGNATURE ELEMENT — LIVE PARCEL SCAN
+   ========================================= */
+
+.scan-panel {
+    position: relative;
+    background: linear-gradient(180deg, #0b211f 0%, #081a18 100%);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    padding: 20px 20px 24px;
+    box-shadow: 0 30px 70px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.03);
+    overflow: hidden;
+}
+
+.scan-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.scan-panel-dots {
+    display: flex;
+    gap: 6px;
+}
+
+.scan-panel-dots span {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--border);
+}
+
+.scan-panel-label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--teal-bright);
+    text-transform: uppercase;
+}
+
+.scan-panel-label .dot-live {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--teal-bright);
+    box-shadow: 0 0 0 0 rgba(41,224,211,0.6);
+    animation: livepulse 2s infinite;
+}
+
+@keyframes livepulse {
+    0%   { box-shadow: 0 0 0 0 rgba(41,224,211,0.55); }
+    70%  { box-shadow: 0 0 0 8px rgba(41,224,211,0); }
+    100% { box-shadow: 0 0 0 0 rgba(41,224,211,0); }
+}
+
+.scan-map {
+    position: relative;
+    height: 250px;
+    border-radius: 14px;
+    background-color: #0a1e1c;
+    background-image:
+        linear-gradient(rgba(19,184,174,0.10) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(19,184,174,0.10) 1px, transparent 1px);
+    background-size: 26px 26px;
+    overflow: hidden;
+    border: 1px solid var(--border-soft);
+}
+
+.scan-beam {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 70px;
+    background: linear-gradient(180deg, rgba(41,224,211,0) 0%, rgba(41,224,211,0.18) 50%, rgba(41,224,211,0) 100%);
+    animation: sweep 4.5s ease-in-out infinite;
+}
+
+@keyframes sweep {
+    0%   { transform: translateY(-70px); }
+    50%  { transform: translateY(250px); }
+    100% { transform: translateY(-70px); }
+}
+
+.scan-pin {
+    position: absolute;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--gold-bright);
+    box-shadow: 0 0 0 0 rgba(240,206,97,0.55);
+    animation: pinpulse 2.6s infinite;
+}
+
+.scan-pin::after {
+    content: attr(data-label);
+    position: absolute;
+    top: -22px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--text-mid);
+    white-space: nowrap;
+    background: rgba(6,19,18,0.85);
+    padding: 2px 6px;
+    border-radius: 6px;
+}
+
+@keyframes pinpulse {
+    0%   { box-shadow: 0 0 0 0 rgba(240,206,97,0.5); }
+    70%  { box-shadow: 0 0 0 9px rgba(240,206,97,0); }
+    100% { box-shadow: 0 0 0 0 rgba(240,206,97,0); }
+}
+
+.pin-1 { top: 40%; left: 28%; animation-delay: 0s; }
+.pin-2 { top: 65%; left: 62%; animation-delay: 0.7s; }
+.pin-3 { top: 25%; left: 70%; animation-delay: 1.4s; }
+
+.scan-readout {
+    margin-top: 16px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.readout-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #0b211f;
+    border: 1px solid var(--border-soft);
+    border-radius: 10px;
+    padding: 10px 13px;
+    font-size: 12.5px;
+    opacity: 0;
+    animation: readoutIn 0.6s ease forwards;
+}
+
+.readout-row span:first-child {
+    color: var(--text-lo);
+}
+
+.readout-row span:last-child {
+    font-weight: 700;
+    color: var(--text-hi);
+}
+
+.readout-row .ok { color: var(--teal-bright); }
+.readout-row .warn { color: var(--gold-bright); }
+
+.readout-row:nth-child(1) { animation-delay: 0.3s; }
+.readout-row:nth-child(2) { animation-delay: 0.55s; }
+.readout-row:nth-child(3) { animation-delay: 0.8s; }
+.readout-row:nth-child(4) { animation-delay: 1.05s; }
+
+@keyframes readoutIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 980px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 40px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .scan-beam, .dot-live, .scan-pin, .readout-row {
+        animation: none !important;
+    }
+    .readout-row { opacity: 1; }
+}
+
+/* =========================================
+   SECTION SHARED
+   ========================================= */
+
+section { padding: 84px 0; }
+
+.section-head {
+    text-align: center;
+    max-width: 620px;
+    margin: 0 auto 52px;
+}
+
+.section-head .eyebrow { justify-content: center; display: flex; }
+
+.section-head h2 {
+    font-family: var(--font-display);
+    font-size: 34px;
+    font-weight: 700;
+    color: var(--text-hi);
+    margin-bottom: 14px;
+    letter-spacing: -0.01em;
+}
+
+.section-head p {
+    color: var(--text-mid);
+    font-size: 16px;
+}
+
+/* =========================================
+   FEATURES
+   ========================================= */
+
+.features {
+    border-top: 1px solid var(--border-soft);
+    background: rgba(9, 27, 25, 0.4);
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+}
+
+.feature-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 28px 26px;
+    transition: border-color 0.25s ease, transform 0.25s ease;
+}
+
+.feature-card:hover {
+    border-color: #3a5c56;
+    transform: translateY(-3px);
+}
+
+.feature-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 11px;
+    background: rgba(19,184,174,0.12);
+    border: 1px solid rgba(19,184,174,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 19px;
+    margin-bottom: 18px;
+}
+
+.feature-card h3 {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 9px;
+    color: var(--text-hi);
+}
+
+.feature-card p {
+    font-size: 14.5px;
+    color: var(--text-mid);
+}
+
+@media (max-width: 980px) {
+    .feature-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 620px) {
+    .feature-grid { grid-template-columns: 1fr; }
+}
+
+/* =========================================
+   HOW IT WORKS
+   ========================================= */
+
+.steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    position: relative;
+}
+
+.step {
+    padding: 0 24px;
+    position: relative;
+}
+
+.step:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 20px;
+    right: -12px;
+    width: 24px;
+    height: 1px;
+    background: var(--border);
+}
+
+.step-num {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--teal-bright);
+    letter-spacing: 0.08em;
+    margin-bottom: 14px;
+}
+
+.step h3 {
+    font-family: var(--font-display);
+    font-size: 19px;
+    font-weight: 600;
+    color: var(--text-hi);
+    margin-bottom: 10px;
+}
+
+.step p {
+    font-size: 14.5px;
+    color: var(--text-mid);
+}
+
+@media (max-width: 760px) {
+    .steps { grid-template-columns: 1fr; gap: 34px; }
+    .step:not(:last-child)::after { display: none; }
+}
+
+/* =========================================
+   AUDIENCE
+   ========================================= */
+
+.audience {
+    border-top: 1px solid var(--border-soft);
+    background: rgba(9, 27, 25, 0.4);
+}
+
+.chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    justify-content: center;
+}
+
+.chip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 12px 22px;
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--text-hi);
+}
+
+.chip .chip-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--gold);
+}
+
+/* =========================================
+   FINAL CTA
+   ========================================= */
+
+.final-cta {
+    text-align: center;
+    background:
+        radial-gradient(circle at 50% 0%, rgba(19,184,174,0.12) 0%, transparent 60%);
+}
+
+.final-cta h2 {
+    font-family: var(--font-display);
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--text-hi);
+    margin-bottom: 16px;
+    letter-spacing: -0.01em;
+}
+
+.final-cta p {
+    color: var(--text-mid);
+    font-size: 16px;
+    max-width: 480px;
+    margin: 0 auto 32px;
+}
+
+/* =========================================
+   FOOTER
+   ========================================= */
+
+footer {
+    border-top: 1px solid var(--border-soft);
+    padding: 40px 0;
+}
+
+.footer-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 18px;
+}
+
+.footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.footer-brand img {
+    width: 26px;
+    height: 26px;
+    mix-blend-mode: screen;
+}
+
+.footer-brand span {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--text-mid);
+}
+
+.footer-links {
+    display: flex;
+    gap: 26px;
+    font-size: 14px;
+}
+
+.footer-links a {
+    color: var(--text-lo);
+    text-decoration: none;
+}
+
+.footer-links a:hover {
+    color: var(--text-hi);
+}
+
+.footer-tag {
+    font-size: 12.5px;
+    color: var(--text-lo);
+    text-align: center;
+    margin-top: 24px;
+}
+
+@media (max-width: 600px) {
+    .footer-inner { flex-direction: column; text-align: center; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+    <div class="wrap nav-inner">
+        <a href="index.html" class="brand">
+            <img src="logo.png" alt="GeoNEXA AI">
+            <span>GEO<em>NEXA</em> AI</span>
+        </a>
+
+        <div class="nav-links">
+            <a href="#features">What it does</a>
+            <a href="#how">How it works</a>
+            <a href="#audience">Who it's for</a>
+        </div>
+
+        <div class="nav-cta">
+            <a href="login.html" class="login-link">Log in</a>
+            <a href="signup.html" class="btn-primary">Get started →</a>
+        </div>
+    </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+    <div class="wrap hero-grid">
+
+        <div>
+            <div class="eyebrow">AI Land Intelligence for Rwanda</div>
+
+            <h1>Ask your land<br><span class="accent">anything.</span></h1>
+
+            <p class="lead">
+                GeoNEXA AI reads satellite imagery, ownership records, zoning rules
+                and risk data for any parcel — and hands you a clear answer in seconds,
+                not weeks of paperwork.
+            </p>
+
+            <div class="hero-actions">
+                <a href="signup.html" class="btn-primary large">Create your free account →</a>
+                <a href="login.html" class="link-secondary">I already have an account</a>
+            </div>
+
+            <div class="hero-trust">
+                <div>30 sec<span>Average scan time</span></div>
+                <div>5 provinces<span>Coverage across Rwanda</span></div>
+                <div>6 user types<span>Built for every stakeholder</span></div>
+            </div>
+        </div>
+
+        <div class="scan-panel">
+            <div class="scan-panel-head">
+                <div class="scan-panel-dots"><span></span><span></span><span></span></div>
+                <div class="scan-panel-label">
+                    <span class="dot-live"></span>
+                    Live parcel scan
+                </div>
+            </div>
+
+            <div class="scan-map">
+                <div class="scan-beam"></div>
+                <div class="scan-pin pin-1" data-label="Kigali"></div>
+                <div class="scan-pin pin-2" data-label="Huye"></div>
+                <div class="scan-pin pin-3" data-label="Musanze"></div>
+            </div>
+
+            <div class="scan-readout">
+                <div class="readout-row"><span>Ownership</span><span class="ok">Verified ✓</span></div>
+                <div class="readout-row"><span>Zoning</span><span>Residential</span></div>
+                <div class="readout-row"><span>Flood risk</span><span class="ok">Low</span></div>
+                <div class="readout-row"><span>Est. value</span><span class="warn">RWF 42M</span></div>
+            </div>
+        </div>
+
+    </div>
+</header>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+    <div class="wrap">
+
+        <div class="section-head">
+            <div class="eyebrow">What GeoNEXA does</div>
+            <h2>One search. Every answer about your land.</h2>
+            <p>No more chasing five different offices for five different answers. GeoNEXA brings it all into a single, plain-language report.</p>
+        </div>
+
+        <div class="feature-grid">
+
+            <div class="feature-card">
+                <div class="feature-icon">📜</div>
+                <h3>Land Ownership & Titles</h3>
+                <p>Confirm who legally owns a parcel and check the title status before you sign anything.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🗺️</div>
+                <h3>Urban & Land Use Planning</h3>
+                <p>See the actual zoning rules for a plot — what can legally be built there, and what can't.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">⚠️</div>
+                <h3>Spatial Risk Assessment</h3>
+                <p>Flood zones, slope instability and other site risks, mapped and scored before you commit.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">💰</div>
+                <h3>Property Valuation</h3>
+                <p>A data-backed estimate of what a parcel is really worth — not a guess.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📈</div>
+                <h3>Investment Opportunities</h3>
+                <p>Surface parcels and growth corridors worth watching, ranked by upside.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🛰️</div>
+                <h3>Satellite-Verified Data</h3>
+       <p>Every report is cross-checked against current satellite imagery, not outdated paper records.</p>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+    <div class="wrap">
+
+        <div class="section-head">
+            <div class="eyebrow">How it works</div>
+            <h2>Three steps to land clarity</h2>
+            <p>From search to insight in under a minute — no expertise required.</p>
+        </div>
+
+        <div class="steps">
+            <div class="step">
+                <div class="step-num">STEP 01</div>
+                <h3>Enter a parcel</h3>
+                <p>Search by location, parcel ID, or drop a pin on the map. We handle the rest.</p>
+            </div>
+            <div class="step">
+                <div class="step-num">STEP 02</div>
+                <h3>AI analyzes</h3>
+                <p>Our engine cross-references satellite data, registries, and spatial risk layers in real time.</p>
+            </div>
+            <div class="step">
+                <div class="step-num">STEP 03</div>
+                <h3>Get your report</h3>
+                <p>Receive a clear, plain-language summary you can read, share, and act on.</p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- AUDIENCE -->
+<section class="audience" id="audience">
+    <div class="wrap">
+
+        <div class="section-head">
+            <div class="eyebrow">Who it's for</div>
+            <h2>Built for everyone who touches land</h2>
+            <p>From government planners to private developers — GeoNEXA speaks your language.</p>
+        </div>
+
+        <div class="chip-row">
+            <span class="chip"><span class="chip-dot"></span> Urban planners</span>
+            <span class="chip"><span class="chip-dot"></span> Real estate investors</span>
+            <span class="chip"><span class="chip-dot"></span> Developers</span>
+            <span class="chip"><span class="chip-dot"></span> Government agencies</span>
+            <span class="chip"><span class="chip-dot"></span> Farmers & cooperatives</span>
+            <span class="chip"><span class="chip-dot"></span> Legal professionals</span>
+        </div>
+
+    </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+    <div class="wrap">
+
+        <h2>Ready to know your land?</h2>
+        <p>Join hundreds of Rwandan professionals who use GeoNEXA to make smarter land decisions.</p>
+        <a href="signup.html" class="btn-primary large">Start your free trial →</a>
+
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <div class="wrap">
+
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <img src="logo.png" alt="GeoNEXA AI">
+                <span>GEONEXA</em> AI</span>
+            </div>
+            <div class="footer-links">
+                <a href="#">Privacy</a>
+                <a href="#">Terms</a>
+                <a href="#">Support</a>
+                <a href="#">Contact</a>
+            </div>
+        </div>
+
+        <div class="footer-tag">
+            &copy; 2026 GeoNEXA AI — Land intelligence powered by artificial intelligence.
+        </div>
+
+    </div>
+</footer>
+
+<script src="./pwa-register.js"></script>
+</body>
+</html>

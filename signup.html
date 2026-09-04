@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>GeoNEXA AI</title>
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#112b28">
+<style>
+/* =========================================
+   GEONEXA AI — SIGN UP PAGE
+   ========================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    min-height: 100%;
+}
+
+body {
+    min-height: 100vh;
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    background:
+        radial-gradient(
+            circle at 50% 0%,
+            #112b28 0%,
+            #091b19 45%,
+            #061312 100%
+        );
+
+    color: #f2f7f5;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 35px 18px;
+}
+
+/* =========================================
+   MAIN CONTAINER
+   ========================================= */
+
+.signup-wrapper {
+    width: 100%;
+    max-width: 1080px;
+
+    padding: 48px 70px 50px;
+
+    background: rgba(7, 25, 23, 0.94);
+
+    border: 1px solid #29433f;
+
+    border-radius: 28px;
+
+    box-shadow:
+        0 25px 70px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(255,255,255,0.025);
+}
+
+/* =========================================
+   HEADER
+   ========================================= */
+
+.header {
+    text-align: center;
+
+    margin-bottom: 40px;
+}
+
+.header .logo {
+    width: 160px;
+    height: 160px;
+
+    margin: 0 auto 18px;
+
+    display: block;
+
+    mix-blend-mode: screen;
+
+    filter: drop-shadow(0 0 18px rgba(19,184,174,0.35));
+}
+
+.header h1 {
+    font-size: 42px;
+
+    font-weight: 700;
+
+    color: #f4f8f6;
+
+    margin-bottom: 14px;
+}
+
+.header p {
+    color: #8fa59f;
+
+    font-size: 17px;
+
+    line-height: 1.5;
+}
+
+/* =========================================
+   FORM
+   ========================================= */
+
+#signupForm {
+    width: 100%;
+}
+
+.form-status {
+    width: 100%;
+
+    margin-bottom: 20px;
+
+    text-align: center;
+
+    color: #d8b84c;
+
+    font-size: 15px;
+}
+
+/* =========================================
+   TWO COLUMN ROW
+   ========================================= */
+
+.row-2 {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 25px;
+}
+
+/* =========================================
+   FIELDS
+   ========================================= */
+
+.field {
+    margin-bottom: 24px;
+}
+
+.field label {
+    display: block;
+
+    color: #f0f5f3;
+
+    font-size: 17px;
+
+    font-weight: 700;
+
+    margin-bottom: 10px;
+}
+
+.field input,
+.field select {
+    width: 100%;
+
+    height: 62px;
+
+    padding: 0 20px;
+
+    background: #0b211f;
+
+    border: 1px solid #2d4a45;
+
+    border-radius: 16px;
+
+    outline: none;
+
+    color: #ffffff;
+
+    font-size: 16px; 
+
+    transition: all 0.25s ease;
+}
+
+.field input::placeholder {
+    color: #667f79;
+}
+
+.field input:hover,
+.field select:hover {
+    border-color: #3a5c56;
+}
+
+.field input:focus,
+.field select:focus {
+    border-color: #13b8ae;
+
+    background: #0c2522;
+
+    box-shadow:
+        0 0 0 3px rgba(19,184,174,0.13);
+}
+
+/* Select */
+.field select {
+    appearance: auto;
+
+    cursor: pointer;
+}
+
+.field select option {
+    background: #0b211f;
+
+    color: #ffffff;
+}
+
+/* =========================================
+   PASSWORD ERROR
+   ========================================= */
+
+.field-error {
+    display: none;
+
+    margin-top: 8px;
+
+    color: #e57373;
+
+    font-size: 13px;
+}
+
+/* =========================================
+   TERMS CHECKBOX
+   ========================================= */
+
+.checkbox-row {
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 11px;
+
+    margin: 5px 0 28px;
+
+    color: #dce7e4;
+
+    font-size: 15px;
+
+    line-height: 1.5;
+}
+
+.checkbox-row input[type="checkbox"] {
+    width: 19px;
+    height: 19px;
+
+    margin-top: 2px;
+
+    flex-shrink: 0;
+
+    accent-color: #12b8ae;
+
+    cursor: pointer;
+}
+
+.checkbox-row label {
+    font-weight: 400;
+}
+
+.checkbox-row a {
+    color: #d8b84c;
+
+    text-decoration: none;
+
+    font-weight: 600;
+}
+
+.checkbox-row a:hover {
+    color: #f0ce61;
+
+    text-decoration: underline;
+}
+
+/* =========================================
+   PRIMARY BUTTON
+   ========================================= */
+
+.primary {
+    width: 100%;
+
+    height: 64px;
+
+    border: none;
+
+    border-radius: 16px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #12bbb2,
+            #0da59e
+        );
+
+    color: #ffffff;
+
+    font-size: 19px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 8px 25px rgba(12,185,176,0.18);
+
+    transition: all 0.25s ease;
+}
+
+.primary:hover {
+    background:
+        linear-gradient(
+            135deg,
+            #19c9bf,
+            #10b4ab
+        );
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 12px 30px rgba(12,185,176,0.28);
+}
+
+.primary:active {
+    transform: translateY(0);
+}
+
+.primary:disabled {
+    opacity: 0.55;
+
+    cursor: not-allowed;
+
+    transform: none;
+}
+
+/* =========================================
+   LOGIN LINK
+   ========================================= */
+
+.below {
+    text-align: center;
+
+    margin-top: 28px;
+
+    color: #899f9a;
+
+    font-size: 16px;
+}
+
+.below a {
+    color: #d8b84c;
+
+    text-decoration: none;
+
+    font-weight: 600;
+}
+
+.below a:hover {
+    color: #f0ce61;
+
+    text-decoration: underline;
+}
+
+/* =========================================
+   BACK HOME
+   ========================================= */
+
+.back-home {
+    text-align: center;
+
+    margin-top: 23px;
+}
+
+.back-home a {
+    color: #d8b84c;
+
+    text-decoration: none;
+
+    font-size: 16px;
+
+    font-weight: 600;
+}
+
+.back-home a:hover {
+    color: #f0ce61;
+
+    text-decoration: underline;
+}
+
+/* =========================================
+   MOBILE
+   ========================================= */
+
+@media (max-width: 700px) {
+
+    body {
+        padding: 15px;
+        align-items: flex-start;
+    }
+
+    .signup-wrapper {
+        padding: 35px 22px 40px;
+
+        border-radius: 22px;
+
+        margin: 15px 0;
+    }
+
+    .header {
+        margin-bottom: 30px;
+    }
+
+    .header .logo {
+        width: 120px;
+        height: 120px;
+        margin-bottom: 14px;
+    }
+
+    .header h1 {
+        font-size: 32px;
+    }
+
+    .header p {
+        font-size: 14px;
+
+        line-height: 1.5;
+    }
+
+    .row-2 {
+        grid-template-columns: 1fr;
+
+        gap: 0;
+    }
+
+    .field {
+        margin-bottom: 21px;
+    }
+
+    .field label {
+        font-size: 15px;
+    }
+
+    .field input,
+    .field select {
+        height: 56px;
+
+        font-size: 15px;
+
+        border-radius: 14px;
+    }
+
+    .checkbox-row {
+        font-size: 13px;
+    }
+
+    .primary {
+        height: 57px;
+
+        font-size: 16px;
+
+        border-radius: 14px;
+    }
+
+    .below {
+        font-size: 14px;
+    }
+
+    .back-home a {
+        font-size: 14px;
+    }
+}
+
+/* =========================================
+   SMALL PHONES
+   ========================================= */
+
+@media (max-width: 380px) {
+
+    .signup-wrapper {
+        padding: 28px 17px 32px;
+    }
+
+    .header h1 {
+        font-size: 28px;
+    }
+
+    .header p {
+        font-size: 13px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="signup-wrapper">
+
+    <!-- Header -->
+    <div class="header">
+
+        <img src="logo.png" alt="GeoNEXA AI" class="logo">
+
+        <h1>Create your account</h1>
+
+        <p>
+            Get intelligent information about land,
+            property, planning and spatial risks.
+        </p>
+
+    </div>
+
+
+    <!-- Status -->
+    <div id="formStatus" class="form-status"></div>
+
+
+    <!-- Signup Form -->
+    <form id="signupForm" novalidate>
+
+
+        <!-- Full Name + Phone -->
+        <div class="row-2">
+
+            <div class="field">
+
+                <label for="fullName">
+                    Full Name
+                </label>
+
+                <input
+                    type="text"
+                    id="fullName"
+                    name="fullName"
+                    placeholder="e.g. Jean Paul Uwimana"
+                    autocomplete="name"
+                    required
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="phone">
+                    Phone Number
+                </label>
+
+                <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    placeholder="0788 123 456"
+                    autocomplete="tel"
+                    required
+                >
+
+            </div>
+
+        </div>
+
+
+        <!-- Email -->
+        <div class="field">
+
+            <label for="email">
+                Email Address
+            </label>
+
+            <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="you@example.com"
+                autocomplete="email"
+                required
+            >
+
+        </div>
+
+
+        <!-- Province + User Type -->
+        <div class="row-2">
+
+            <div class="field">
+
+                <label for="province">
+                    Province / Location
+                </label>
+
+                <input
+                    type="text"
+                    id="province"
+                    name="province"
+                    placeholder="e.g. Kigali"
+                    required
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="userType">
+                    User Type
+                </label>
+
+                <select
+                    id="userType"
+                    name="userType"
+                    required
+                >
+
+                    <option
+                        value=""
+                        disabled
+                        selected
+                    >
+                        Select your role
+                    </option>
+
+                    <option value="individual">
+                        Individual
+                    </option>
+
+                    <option value="landowner">
+                        Landowner
+                    </option>
+
+                    <option value="developer">
+                        Developer
+                    </option>
+
+                    <option value="surveyor">
+                        Surveyor
+                    </option>
+
+                    <option value="government">
+                        Government
+                    </option>
+
+                    <option value="investor">
+                        Investor
+                    </option>
+
+                    <option value="other">
+                        Other
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <!-- Interest -->
+        <div class="field">
+
+            <label for="interest">
+                What land information are you interested in?
+            </label>
+
+            <select
+                id="interest"
+                name="interest"
+                required
+            >
+
+                <option
+                    value=""
+                    disabled
+                    selected
+                >
+                    Select an area of interest
+                </option>
+
+                <option value="ownership">
+                    Land ownership & titles
+                </option>
+
+                <option value="planning">
+                    Urban & land use planning
+                </option>
+
+                <option value="risk">
+                    Spatial risk assessment
+                </option>
+
+                <option value="valuation">
+                    Property valuation
+                </option>
+
+                <option value="investment">
+                    Investment opportunities
+                </option>
+
+                <option value="other">
+                    Other
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- Password -->
+        <div class="field">
+
+            <label for="password">
+                Password
+            </label>
+
+            <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Create a password"
+                minlength="6"
+                autocomplete="new-password"
+                required
+            >
+
+        </div>
+
+
+        <!-- Confirm Password -->
+        <div class="field">
+
+            <label for="confirmPassword">
+                Confirm Password
+            </label>
+
+            <input
+                type="password"
+                id="confirmPassword"
+                name="confirmPassword"
+                placeholder="Confirm your password"
+                minlength="6"
+                autocomplete="new-password"
+                required
+            >
+
+            <div
+                class="field-error"
+                id="passwordError"
+            >
+                Passwords do not match.
+            </div>
+
+        </div>
+
+
+        <!-- Terms -->
+        <div class="checkbox-row">
+
+            <input
+                type="checkbox"
+                id="acceptTerms"
+                name="acceptTerms"
+                required
+            >
+
+        
+<label>
+  
+  I agree to the <a href="terms.html" target="_blank">Terms of Service</a> 
+  and <a href="privacy.html" target="_blank">Privacy Policy</a>
+</label>
+        </div>
+
+
+        <!-- Create Account -->
+        <button
+            type="submit"
+            class="primary"
+            id="submitBtn"
+        >
+            Create GeoNEXA Account →
+        </button>
+
+
+        <!-- Login -->
+        <p class="below">
+
+            Already have an account?
+
+            <a href="login.html">
+                Login here
+            </a>
+
+        </p>
+
+
+        <!-- Home -->
+        <div class="back-home">
+
+            <a href="index.html">
+                ← Back to Home
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="signup.js"></script>
+
+<script src="config.js"></script>
+
+<script src="signup.js"></script>
+<script src="./pwa-register.js"></script>
+</body>
+</html>

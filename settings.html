@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GeoNEXA AI — Settings</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{
+    --bg:#0a0e14; --sidebar:#0c1119; --panel:#111722; --panel-alt:#0d1420;
+    --border:#1d2733; --text:#e8edf2; --muted:#7c8a99;
+    --teal:#14b8a6; --teal-dim:rgba(20,184,166,0.14);
+    --green:#22c55e; --red:#ef4444;
+  }
+  [data-theme="light"]{
+    --bg:#f4f6f8; --sidebar:#ffffff; --panel:#ffffff; --panel-alt:#eef1f4;
+    --border:#dde3e9; --text:#101820; --muted:#6b7683;
+  }
+  [data-density="compact"] .pref-row{padding:8px 0;}
+  [data-density="compact"] .field{gap:3px;}
+  [data-density="compact"] .card{padding:16px;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;}
+  a{color:inherit;text-decoration:none;}
+
+  .sidebar{
+    width:230px;flex-shrink:0;background:var(--sidebar);border-right:1px solid var(--border);
+    display:flex;flex-direction:column;padding:20px 14px;position:fixed;top:0;bottom:0;left:0;
+    overflow-y:auto;transition:transform .25s ease;z-index:50;
+  }
+  .brand{display:flex;align-items:center;gap:10px;padding:0 6px 22px;}
+  .brand .mark{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--teal),#0891b2);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:#04231d;}
+  .brand .name{font-size:15px;font-weight:700;line-height:1.1;}
+  .brand .tag{font-size:10px;color:var(--muted);}
+  nav{display:flex;flex-direction:column;gap:2px;flex:1;}
+  .navlink{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:9px;font-size:13.5px;color:var(--muted);font-weight:500;}
+  .navlink:hover{background:#141b26;color:var(--text);}
+  .navlink.active{background:var(--teal-dim);color:var(--teal);}
+
+  .main{margin-left:230px;flex:1;padding:18px 24px 40px;min-width:0;}
+  .topbar{display:flex;align-items:center;gap:14px;margin-bottom:20px;flex-wrap:wrap;}
+  .hamburger{display:none;}
+  .tier-pill{
+    font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px;
+    background:var(--panel-alt);border:1px solid var(--border);color:var(--muted);
+    margin-left:auto;
+  }
+  .tier-pill.subscribed{color:var(--green);border-color:rgba(34,197,94,.35);}
+  .profile{display:flex;align-items:center;gap:9px;flex-shrink:0;}
+  .avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--teal),#0891b2);display:flex;align-items:center;justify-content:center;font-weight:700;color:#04231d;font-size:14px;}
+  .pname{font-size:13px;font-weight:700;}
+  .prole{font-size:11px;color:var(--muted);}
+
+  .eyebrow{font-size:11px;color:var(--muted);letter-spacing:.3px;margin-bottom:4px;}
+  h1{font-size:22px;margin-bottom:18px;}
+
+  .tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:20px;overflow-x:auto;}
+  .tab-btn{
+    background:none;border:none;color:var(--muted);font-size:13px;font-weight:600;
+    padding:10px 16px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;
+  }
+  .tab-btn.active{color:var(--teal);border-bottom-color:var(--teal);}
+
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:22px;}
+  .tab-pane{display:none;}
+  .tab-pane.active{display:block;}
+
+  .avatar-row{display:flex;align-items:center;gap:16px;margin-bottom:24px;padding-bottom:22px;border-bottom:1px solid var(--border);}
+  .avatar-lg{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--teal),#0891b2);display:flex;align-items:center;justify-content:center;font-weight:700;color:#04231d;font-size:24px;flex-shrink:0;}
+  .avatar-lg-name{font-size:15px;font-weight:700;}
+  .avatar-lg-email{font-size:12.5px;color:var(--muted);}
+  .avatar-note{font-size:11.5px;color:var(--muted);margin-top:6px;}
+
+  .field-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .field{display:flex;flex-direction:column;gap:6px;}
+  .field label{font-size:12px;color:var(--muted);}
+  .field input, .field select{
+    background:var(--panel-alt);border:1px solid var(--border);color:var(--text);
+    padding:10px 12px;border-radius:9px;font-size:13.5px;
+  }
+  .field input:disabled{color:var(--muted);cursor:not-allowed;}
+
+  .form-actions{display:flex;align-items:center;gap:14px;margin-top:22px;}
+  .btn-solid{background:var(--teal);color:#04231d;border:none;padding:10px 20px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;}
+  .btn-solid:disabled{opacity:.6;cursor:default;}
+  .save-status{font-size:12.5px;}
+
+  .placeholder-pane{text-align:center;padding:40px 16px;color:var(--muted);}
+  .placeholder-pane .icon{font-size:28px;margin-bottom:10px;}
+  .placeholder-pane p{font-size:13px;line-height:1.6;max-width:340px;margin:0 auto;}
+
+  /* ---------- Preferences: grouped sections, segmented controls ---------- */
+  .pref-section{padding:20px 0;border-bottom:1px solid var(--border);}
+  .pref-section:first-child{padding-top:0;}
+  .pref-section:last-of-type{border-bottom:none;}
+  .pref-section-head{margin-bottom:16px;}
+  .pref-section-head h4{font-size:13.5px;font-weight:700;margin-bottom:2px;}
+  .pref-section-head p{font-size:11.5px;color:var(--muted);}
+
+  .pref-row{
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+    padding:12px 0;
+  }
+  .pref-row + .pref-row{border-top:1px solid var(--border);}
+  .pref-row-label{font-size:13px;font-weight:600;}
+  .pref-row-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+
+  .segmented{
+    display:inline-flex;background:var(--panel-alt);border:1px solid var(--border);
+    border-radius:9px;padding:3px;flex-shrink:0;
+  }
+  .segmented button{
+    background:none;border:none;color:var(--muted);font-size:12px;font-weight:600;
+    padding:7px 14px;border-radius:7px;cursor:pointer;white-space:nowrap;
+  }
+  .segmented button.active{background:var(--teal);color:#04231d;}
+
+  .pref-select{
+    background:var(--panel-alt);border:1px solid var(--border);color:var(--text);
+    padding:8px 12px;border-radius:9px;font-size:12.5px;flex-shrink:0;min-width:140px;
+  }
+
+  .toggle-switch{
+    position:relative;width:42px;height:24px;flex-shrink:0;
+  }
+  .toggle-switch input{opacity:0;width:0;height:0;position:absolute;}
+  .toggle-slider{
+    position:absolute;inset:0;background:var(--panel-alt);border:1px solid var(--border);
+    border-radius:20px;cursor:pointer;transition:.2s;
+  }
+  .toggle-slider::before{
+    content:"";position:absolute;width:16px;height:16px;left:3px;top:2px;
+    background:var(--muted);border-radius:50%;transition:.2s;
+  }
+  .toggle-switch input:checked + .toggle-slider{background:var(--teal-dim);border-color:var(--teal);}
+  .toggle-switch input:checked + .toggle-slider::before{transform:translateX(18px);background:var(--teal);}
+
+  .zoom-row{display:flex;align-items:center;gap:12px;flex-shrink:0;}
+  .zoom-row input[type="range"]{width:130px;accent-color:var(--teal);}
+  .zoom-value{font-size:12px;color:var(--muted);width:20px;text-align:right;}
+
+  @media (max-width:560px){
+    .pref-row{flex-direction:column;align-items:flex-start;gap:8px;}
+    .pref-select{width:100%;}
+  }
+
+  /* ---------- Appearance: accent swatches ---------- */
+  .swatch-row{display:flex;gap:10px;flex-shrink:0;}
+  .swatch{
+    width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid transparent;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .swatch.active{border-color:var(--text);}
+  .swatch::after{content:"";width:10px;height:10px;border-radius:50%;background:#04231d;opacity:0;}
+  .swatch.active::after{opacity:1;}
+
+  /* ---------- Security ---------- */
+  .security-note{font-size:11.5px;color:var(--muted);margin-top:8px;line-height:1.5;}
+  .danger-btn{
+    background:transparent;border:1px solid rgba(239,68,68,.4);color:var(--red);
+    padding:9px 16px;border-radius:9px;font-size:12.5px;font-weight:700;cursor:pointer;
+  }
+  .field-narrow{max-width:320px;}
+  .strength-bar{height:4px;border-radius:2px;background:var(--panel-alt);margin-top:6px;overflow:hidden;}
+  .strength-bar-fill{height:100%;width:0%;background:var(--red);transition:.2s;}
+
+  @media (max-width:820px){
+    .sidebar{transform:translateX(-100%);}
+    .sidebar.open{transform:translateX(0);}
+    .main{margin-left:0;padding:16px;}
+    .hamburger{display:flex;width:38px;height:38px;border-radius:10px;background:var(--panel);border:1px solid var(--border);align-items:center;justify-content:center;color:var(--text);order:-1;}
+  }
+  @media (max-width:560px){
+    .field-grid{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<div class="sidebar" id="sidebar">
+  <div class="brand">
+    <div class="mark">G</div>
+    <div>
+      <div class="name">GeoNEXA AI</div>
+      <div class="tag">Connecting the World, Spatial Sense</div>
+    </div>
+  </div>
+  <nav>
+    <a class="navlink" href="dashboard.html">🏠 Dashboard</a>
+    <a class="navlink" href="map-explorer.html">🗺️ Map Explorer</a>
+    <a class="navlink" href="property-analysis.html">📊 Property Analysis</a>
+    <a class="navlink" href="reports.html">📄 Reports</a>
+    <a class="navlink" href="saved-properties.html">❤ Saved Properties</a>
+    <a class="navlink" href="alerts.html">🔔 Alerts</a>
+    <a class="navlink" href="dashboard.html">🤖 AI Assistant</a>
+    <a class="navlink" href="subscription.html">💳 Subscription</a>
+    <a class="navlink" id="navUsersAccess" href="coming-soon.html?feature=Users+%26+Access">👥 Users &amp; Access</a>
+    <a class="navlink active" href="settings.html">⚙️ Settings</a>
+  </nav>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <button class="hamburger" id="hamburgerBtn">☰</button>
+    <span class="tier-pill" id="tierPill">Loading…</span>
+    <div class="profile">
+      <div class="avatar" id="avatarInitial">?</div>
+      <div>
+        <div class="pname" id="profileName">Loading…</div>
+        <div class="prole" id="profileRole">&nbsp;</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="eyebrow">Configuration</div>
+  <h1>Settings</h1>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="account">Account</button>
+    <button class="tab-btn" data-tab="appearance">Appearance</button>
+    <button class="tab-btn" data-tab="notifications">Notifications</button>
+    <button class="tab-btn" data-tab="security">Security</button>
+    <button class="tab-btn" data-tab="preferences">Preferences</button>
+  </div>
+
+  <div class="card">
+    <!-- Account tab -->
+    <div class="tab-pane active" id="pane-account">
+      <div class="avatar-row">
+        <div class="avatar-lg" id="avatarLg">?</div>
+        <div>
+          <div class="avatar-lg-name" id="avatarLgName">Loading…</div>
+          <div class="avatar-lg-email" id="avatarLgEmail"></div>
+          <div class="avatar-note">Profile photos aren't supported yet — your initial is shown instead.</div>
+        </div>
+      </div>
+
+      <form id="accountForm">
+        <div class="field-grid">
+          <div class="field">
+            <label for="fldFullName">Full Name</label>
+            <input type="text" id="fldFullName" placeholder="Your full name">
+          </div>
+          <div class="field">
+            <label for="fldEmail">Email Address</label>
+            <input type="email" id="fldEmail" disabled>
+          </div>
+          <div class="field">
+            <label for="fldOrganization">Organization</label>
+            <input type="text" id="fldOrganization" placeholder="Company or organization">
+          </div>
+          <div class="field">
+            <label for="fldPhone">Phone</label>
+            <input type="tel" id="fldPhone" placeholder="+250 7XX XXX XXX">
+          </div>
+          <div class="field">
+            <label for="fldRole">Role</label>
+            <select id="fldRole">
+              <option value="individual">Individual</option>
+              <option value="landowner">Landowner</option>
+              <option value="developer">Developer</option>
+              <option value="surveyor">Surveyor</option>
+              <option value="government">Government</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="fldCountry">Country</label>
+            <input type="text" id="fldCountry" placeholder="Rwanda">
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-solid" id="saveBtn">Save changes</button>
+          <span class="save-status" id="saveStatus"></span>
+        </div>
+      </form>
+    </div>
+
+    <!-- Appearance tab -->
+    <div class="tab-pane" id="pane-appearance">
+      <div class="pref-section">
+        <div class="pref-section-head">
+          <h4>Theme</h4>
+          <p>Applied immediately, saved to your account.</p>
+        </div>
+        <div class="pref-row">
+          <div>
+            <div class="pref-row-label">Appearance</div>
+            <div class="pref-row-sub">System follows your device's setting</div>
+          </div>
+          <div class="segmented" id="themeSegmented">
+            <button type="button" data-value="dark">Dark</button>
+            <button type="button" data-value="light">Light</button>
+            <button type="button" data-value="system">System</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="pref-section">
+        <div class="pref-section-head">
+          <h4>Density</h4>
+          <p>How tightly spaced menus, cards, and lists are.</p>
+        </div>
+        <div class="pref-row">
+          <div>
+            <div class="pref-row-label">Layout density</div>
+            <div class="pref-row-sub">Compact fits more on screen</div>
+          </div>
+          <div class="segmented" id="densitySegmented">
+            <button type="button" data-value="comfortable">Comfortable</button>
+            <button type="button" data-value="compact">Compact</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="pref-section">
+        <div class="pref-section-head">
+          <h4>Accent Color</h4>
+          <p>Used for buttons, links, and highlights.</p>
+        </div>
+        <div class="pref-row">
+          <div>
+            <div class="pref-row-label">Accent</div>
+            <div class="pref-row-sub">Applied across the interface</div>
+          </div>
+          <div class="swatch-row" id="accentSwatches">
+            <span class="swatch active" data-value="teal" data-color="#14b8a6" style="background:#14b8a6;"></span>
+            <span class="swatch" data-value="blue" data-color="#3b82f6" style="background:#3b82f6;"></span>
+            <span class="swatch" data-value="purple" data-color="#a855f7" style="background:#a855f7;"></span>
+            <span class="swatch" data-value="green" data-color="#22c55e" style="background:#22c55e;"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn-solid" id="saveAppearanceBtn">Save appearance</button>
+        <span class="save-status" id="appearanceSaveStatus"></span>
+      </div>
+      <p class="security-note">Currently applies to this Settings page. Say the word and I'll wire it into Dashboard, Reports, and Map Explorer too.</p>
+    </div>
+
+    <!-- Notifications tab -->
+    <div class="tab-pane" id="pane-notifications">
+      <div class="pref-section">
+        <div class="pref-section-head">
+          <h4>Delivery Channels</h4>
+          <p>How you're reached when something needs your attention.</p>
+        </div>
+        <div class="pref-row">
+          <div>
+            <div class="pref-row-label">Email</div>
+            <div class="pref-row-sub" id="notifyEmailAddr"></div>
+          </div>
+          <label class="toggle-switch"><input type="checkbox" id="notifyEmail" checked><span class="toggle-slider"></span></label>
+        </div>
+        <div class="pref-row">
+          <div>
+            <div class="pref-row-label">SMS</div>
+            <div class="pref-row-sub">Sent to the phone number in your Account tab</div>
+          </div>
+          <label class="toggle-switch"><input type="checkbox" id="notifySms"><span class="toggle-slider"></span></label>
+        </div>
+        <div class="pref-row">
+          <div>
+            <div class="pref-row-label">In-app</div>
+            <div class="pref-row-sub">Shown in the bell icon on every page</div>
+          </div>
+          <label class="toggle-switch"><input type="checkbox" id="notifyInApp" checked><span class="toggle-slider"></span></label>
+        </div>
+      </div>
+
+      <div class="pref-section">
+        <div class="pref-section-head">
+          <h4>What You're Notified About</h4>
+        </div>
+        <div class="pref-row">
+          <div>
+            <div class="pref-row-label">Boundary dispute alerts</div>
+            <div class="pref-row-sub">New disputes on parcels you've viewed or saved</div>
+          </div>
+          <label class="toggle-switch"><input type="checkbox" id="notifyDisputes" checked><span class="toggle-slider"></span></label>
+        </div>
+        <div class="pref-row">
+          <div>
+            <div class="pref-row-label">Risk zone updates</div>
+            <div class="pref-row-sub">Flood, slope, or other spatial risk changes</div>
+          </div>
+          <label class="toggle-switch"><input type="checkbox" id="notifyRisk" checked><span class="toggle-slider"></span></label>
+        </div>
+        <div class="pref-row">
+          <div>
+            <div class="pref-row-label">Report ready</div>
+            <div class="pref-row-sub">When a requested analysis finishes generating</div>
+          </div>
+          <label class="toggle-switch"><input type="checkbox" id="notifyReports" checked><span class="toggle-slider"></span></label>
+        </div>
+        <div class="pref-row">
+          <div>
+            <div class="pref-row-label">Billing &amp; subscription</div>
+            <div class="pref-row-sub">Payment confirmations and renewal reminders</div>
+          </div>
+          <label class="toggle-switch"><input type="checkbox" id="notifyBilling" checked><span class="toggle-slider"></span></label>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn-solid" id="saveNotificationsBtn">Save notification preferences</button>
+        <span class="save-status" id="notificationsSaveStatus"></span>
+      </div>
+      <p class="security-note">These preferences are saved and ready to use, but actual email/SMS delivery isn't connected to a sender yet — that needs a mail/SMS provider wired up as a next step.</p>
+    </div>
+
+    <!-- Security tab -->
+    <div class="tab-pane" id="pane-security">
+      <div class="pref-section">
+        <div class="pref-section-head">
+          <h4>Change Password</h4>
+          <p>You'll stay signed in on this device after changing it.</p>
+        </div>
+        <form id="passwordForm">
+          <div class="field field-narrow" style="margin-bottom:14px;">
+            <label for="fldNewPassword">New password</label>
+            <input type="password" id="fldNewPassword" placeholder="At least 8 characters" autocomplete="new-password">
+            <div class="strength-bar"><div class="strength-bar-fill" id="strengthBarFill"></div></div>
+          </div>
+          <div class="field field-narrow" style="margin-bottom:14px;">
+            <label for="fldConfirmPassword">Confirm new password</label>
+            <input type="password" id="fldConfirmPassword" placeholder="Repeat password" autocomplete="new-password">
+          </div>
+          <div class="form-actions" style="margin-top:0;">
+            <button type="submit" class="btn-solid" id="savePasswordBtn">Update password</button>
+            <span class="save-status" id="passwordSaveStatus"></span>
+          </div>
+        </form>
+      </div>
+
+      <div class="pref-section">
+        <div class="pref-section-head">
+          <h4>Two-Factor Authentication</h4>
+          <p>Require a code from your phone in addition to your password.</p>
+        </div>
+        <div class="pref-row">
+          <div>
+            <div class="pref-row-label">2FA</div>
+            <div class="pref-row-sub">Not available yet — coming in a future update</div>
+          </div>
+          <label class="toggle-switch"><input type="checkbox" disabled><span class="toggle-slider"></span></label>
+        </div>
+      </div>
+
+      <div class="pref-section">
+        <div class="pref-section-head">
+          <h4>Active Sessions</h4>
+          <p>Signed in on a shared or lost device? End every session at once.</p>
+        </div>
+        <button type="button" class="danger-btn" id="signOutAllBtn">Sign out of all devices</button>
+        <p class="security-note" id="signOutAllStatus"></p>
+      </div>
+    </div>
+
+    <!-- Preferences tab -->
+    <div class="tab-pane" id="pane-preferences">
+      <div class="pref-section">
+        <div class="pref-section-head">
+          <h4>Measurement &amp; Display</h4>
+          <p>How numbers and units appear across reports and the map.</p>
+        </div>
+        <div class="pref-row">
+          <div>
+            <div class="pref-row-label">Units</div>
+            <div class="pref-row-sub">Area, distance, and elevation measurements</div>
+          </div>
+          <div class="segmented" id="unitsSegmented">
+            <button type="button" data-value="metric">Metric</button>
+            <button type="button" data-value="imperial">Imperial</button>
+          </div>
+        </div>
+        <div class="pref-row">
+          <div>
+            <div class="pref-row-label">Currency</div>
+            <div class="pref-row-sub">Used in valuation and transaction reports</div>
+          </div>
+          <select class="pref-select" id="fldCurrency">
+            <option value="RWF">RWF — Rwandan Franc</option>
+            <option value="USD">USD — US Dollar</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="pref-section">
+        <div class="pref-section-head">
+          <h4>Language</h4>
+          <p>Interface language for menus and reports.</p>
+        </div>
+        <div class="pref-row">
+          <div>
+            <div class="pref-row-label">Display language</div>
+            <div class="pref-row-sub">Applies across the whole platform</div>
+          </div>
+          <select class="pref-select" id="fldLanguage">
+            <option value="en">English</option>
+            <option value="rw">Kinyarwanda</option>
+            <option value="fr">Français</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="pref-section">
+        <div class="pref-section-head">
+          <h4>Map Defaults</h4>
+          <p>What Map Explorer and the dashboard map show when you open them.</p>
+        </div>
+        <div class="pref-row">
+          <div>
+            <div class="pref-row-label">Default layer</div>
+            <div class="pref-row-sub">Shown when the map first loads</div>
+          </div>
+          <select class="pref-select" id="fldDefaultLayer">
+            <option value="all">All Layers</option>
+            <option value="suitability">Suitability</option>
+            <option value="risk">Risk Zones</option>
+            <option value="infrastructure">Infrastructure</option>
+          </select>
+        </div>
+        <div class="pref-row">
+          <div>
+            <div class="pref-row-label">Default zoom</div>
+            <div class="pref-row-sub">1 = whole country, 18 = street level</div>
+          </div>
+          <div class="zoom-row">
+            <input type="range" id="fldZoom" min="1" max="18" step="1">
+            <span class="zoom-value" id="zoomValue">8</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pref-section">
+        <div class="pref-section-head">
+          <h4>AI Assistant</h4>
+          <p>Behavior of the AI Assistant chat.</p>
+        </div>
+        <div class="pref-row">
+          <div>
+            <div class="pref-row-label">Ground answers in nearby parcel data</div>
+            <div class="pref-row-sub">When off, the assistant gives general guidance only</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="fldGroundedAI" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn-solid" id="savePrefsBtn">Save preferences</button>
+        <span class="save-status" id="prefsSaveStatus"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script src="settings.js"></script>
+<script src="./pwa-register.js"></script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GeoNEXA AI — Map Explorer</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{
+    --bg:#0a0e14; --sidebar:#0c1119; --panel:#111722; --panel-alt:#0d1420;
+    --border:#1d2733; --text:#e8edf2; --muted:#7c8a99;
+    --teal:#14b8a6; --teal-dim:rgba(20,184,166,0.14);
+    --green:#22c55e; --yellow:#eab308; --orange:#f97316; --red:#ef4444;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+  a{color:inherit;text-decoration:none;}
+
+  .topbar{
+    display:flex;align-items:center;gap:12px;padding:12px 16px;
+    background:var(--sidebar);border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap;
+  }
+  .back-link{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--muted);flex-shrink:0;}
+  .brand{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px;}
+  .brand .mark{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--teal),#0891b2);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#04231d;}
+  .search-wrap{flex:1;min-width:180px;position:relative;}
+  .search-input{
+    width:100%;background:var(--panel-alt);border:1px solid var(--border);
+    color:var(--text);padding:9px 13px;border-radius:9px;font-size:13px;
+  }
+  .search-results{
+    display:none;position:absolute;top:42px;left:0;right:0;z-index:400;
+    background:var(--panel);border:1px solid var(--border);border-radius:10px;
+    max-height:260px;overflow-y:auto;box-shadow:0 12px 30px rgba(0,0,0,.4);
+  }
+  .search-results.open{display:block;}
+  .search-result{display:flex;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--border);font-size:12.5px;}
+  .search-result:last-child{border-bottom:none;}
+  .search-result:hover{background:#141b26;}
+  .search-empty,.search-loading{padding:12px 14px;font-size:12px;color:var(--muted);}
+
+  .map-area{flex:1;position:relative;min-height:0;}
+  #fullMap{width:100%;height:100%;}
+
+  .hint-pill{
+    position:absolute;top:14px;left:50%;transform:translateX(-50%);z-index:300;
+    background:rgba(17,23,34,.92);border:1px solid var(--border);
+    padding:8px 16px;border-radius:20px;font-size:12px;color:var(--muted);
+    pointer-events:none;
+  }
+
+  .location-panel{
+    position:absolute;left:14px;right:14px;bottom:14px;z-index:300;
+    background:var(--panel);border:1px solid var(--border);border-radius:14px;
+    padding:16px;display:none;max-width:420px;
+  }
+  .location-panel.open{display:block;}
+  .location-panel h4{font-size:14px;margin-bottom:2px;}
+  .location-panel .coords{font-size:11.5px;color:var(--muted);margin-bottom:12px;}
+  .location-panel .row{display:flex;gap:8px;flex-wrap:wrap;}
+  .btn-solid{background:var(--teal);color:#04231d;border:none;padding:10px 16px;border-radius:9px;font-size:12.5px;font-weight:700;cursor:pointer;flex:1;}
+  .btn-outline{border:1px solid var(--border);color:var(--muted);background:transparent;padding:10px 16px;border-radius:9px;font-size:12.5px;font-weight:600;cursor:pointer;}
+  .nearby-list{margin-top:12px;font-size:12px;color:var(--muted);max-height:120px;overflow-y:auto;}
+  .nearby-row{display:flex;justify-content:space-between;padding:6px 0;border-top:1px solid var(--border);}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back-link" href="dashboard.html">← Back</a>
+  <div class="brand"><div class="mark">G</div>Map Explorer</div>
+  <div class="search-wrap">
+    <input type="text" id="searchInput" class="search-input" placeholder="Search a place, district, or sector in Rwanda…" autocomplete="off">
+    <div id="searchResults" class="search-results"></div>
+  </div>
+</div>
+
+<div class="map-area">
+  <div class="hint-pill">Tap anywhere on the map to select a location</div>
+  <div id="fullMap"></div>
+
+  <div class="location-panel" id="locationPanel">
+    <h4 id="locName">Selected location</h4>
+    <div class="coords" id="locCoords"></div>
+    <div class="nearby-list" id="nearbyList"></div>
+    <div class="row" style="margin-top:12px;">
+      <button class="btn-solid" id="analyzeBtn">Analyze with AI →</button>
+      <button class="btn-outline" id="clearBtn">Clear</button>
+    </div>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script src="map-explorer.js"></script>
+<script src="./pwa-register.js"></script>
+</body>
+</html>

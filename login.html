@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GeoNEXA AI</title>
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#112b28">
+<style>
+/* ================================
+   GEONEXA AI LOGIN PAGE
+   ================================ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    min-height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    font-family: Arial, Helvetica, sans-serif;
+
+    background:
+        radial-gradient(
+            circle at 50% 0%,
+            #112b28 0%,
+            #091b19 45%,
+            #061312 100%
+        );
+
+    color: #f2f7f5;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 35px 18px;
+}
+
+/* Mobile-first: page/brand-panel/form-panel don't affect layout
+   here, so body's flex centering acts directly on .login-wrapper,
+   exactly like before. */
+.page {
+    display: contents;
+}
+
+.brand-panel {
+    display: none;
+}
+
+.form-panel {
+    display: contents;
+}
+
+/* Main login card */
+.login-wrapper {
+    width: 100%;
+    max-width: 1080px;
+
+    min-height: 720px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    padding: 45px 70px;
+
+    background: rgba(7, 25, 23, 0.94);
+
+    border: 1px solid #29433f;
+
+    border-radius: 28px;
+
+    box-shadow:
+        0 25px 70px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(255,255,255,0.025);
+}
+
+/* Header */
+.header {
+    text-align: center;
+    margin-bottom: 38px;
+}
+
+.header .logo {
+    width: 160px;
+    height: 160px;
+
+    margin: 0 auto 18px;
+
+    display: block;
+
+    mix-blend-mode: screen;
+
+    filter: drop-shadow(0 0 18px rgba(19,184,174,0.35));
+}
+
+.header h1 {
+    font-size: 42px;
+    font-weight: 700;
+    color: #f4f8f6;
+    margin-bottom: 14px;
+}
+
+.header p {
+    color: #8fa59f;
+    font-size: 17px;
+}
+
+/* Login form */
+#loginForm {
+    width: 100%;
+    max-width: 850px;
+}
+
+/* Status */
+.form-status {
+    width: 100%;
+    margin-bottom: 18px;
+    text-align: center;
+    color: #d9b84c;
+}
+
+/* Fields */
+.field {
+    margin-bottom: 25px;
+}
+
+.field label {
+    display: block;
+
+    color: #f0f5f3;
+
+    font-size: 17px;
+    font-weight: 700;
+
+    margin-bottom: 10px;
+}
+
+.field input {
+    width: 100%;
+    height: 62px;
+
+    padding: 0 20px;
+
+    background: #0b211f;
+
+    border: 1px solid #2d4a45;
+
+    border-radius: 16px;
+
+    outline: none;
+
+    color: #ffffff;
+
+    font-size: 17px;
+
+    transition: 0.25s ease;
+}
+
+.field input::placeholder {
+    color: #667f79;
+}
+
+.field input:hover {
+    border-color: #3a5c56;
+}
+
+.field input:focus {
+    border-color: #13b8ae;
+
+    background: #0c2522;
+
+    box-shadow:
+        0 0 0 3px rgba(19,184,174,0.13);
+}
+
+/* Options */
+.options-row {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-top: 4px;
+    margin-bottom: 28px;
+
+    font-size: 16px;
+}
+
+.options-row label {
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+    color: #dce7e4;
+
+    cursor: pointer;
+}
+
+.options-row input[type="checkbox"] {
+    width: 19px;
+    height: 19px;
+
+    accent-color: #12b8ae;
+
+    cursor: pointer;
+}
+
+.options-row a {
+    color: #d8b84c;
+
+    text-decoration: none;
+
+    font-weight: 600;
+}
+
+.options-row a:hover {
+    color: #f0ce61;
+
+    text-decoration: underline;
+}
+
+/* Login button */
+.primary {
+    width: 100%;
+    height: 64px;
+
+    border: none;
+
+    border-radius: 16px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #12bbb2,
+            #0da59e
+        );
+
+    color: white;
+
+    font-size: 19px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 8px 25px rgba(12,185,176,0.18);
+
+    transition: all 0.25s ease;
+}
+
+.primary:hover {
+    background:
+        linear-gradient(
+            135deg,
+            #19c9bf,
+            #10b4ab
+        );
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 12px 30px rgba(12,185,176,0.28);
+}
+
+.primary:active {
+    transform: translateY(0);
+}
+
+.primary:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Register */
+.below {
+    text-align: center;
+
+    margin-top: 28px;
+
+    color: #899f9a;
+
+    font-size: 16px;
+}
+
+.below a {
+    color: #d8b84c;
+
+    text-decoration: none;
+
+    font-weight: 600;
+}
+
+.below a:hover {
+    color: #f0ce61;
+
+    text-decoration: underline;
+}
+
+/* Back home */
+.back-home {
+    text-align: center;
+
+    margin-top: 23px;
+}
+
+.back-home a {
+    color: #d8b84c;
+
+    text-decoration: none;
+
+    font-size: 16px;
+
+    font-weight: 600;
+}
+
+.back-home a:hover {
+    color: #f0ce61;
+
+    text-decoration: underline;
+}
+
+/* Grid drift animation — top-level, not nested inside a media
+   query, so it parses reliably everywhere. */
+@keyframes driftGrid {
+    from { transform: translate(0, 0); }
+    to { transform: translate(46px, 46px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .grid-overlay { animation: none; }
+}
+
+/* =================================
+   LAPTOP / DESKTOP (>= 960px)
+   Two-panel layout: animated parcel-
+   grid brand panel + login card.
+   ================================= */
+
+@media (min-width: 960px) {
+
+    body {
+        padding: 0;
+        align-items: stretch;
+        display: block;
+    }
+
+    .page {
+        display: flex;
+        width: 100%;
+        min-height: 100vh;
+    }
+
+    .brand-panel {
+        display: flex;
+        flex: 1 1 42%;
+        position: relative;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        padding: 60px;
+        background: linear-gradient(160deg, #0d211d 0%, #071613 100%);
+        border-right: 1px solid #1d3a32;
+    }
+
+    .grid-overlay {
+        position: absolute;
+        inset: -60px;
+        background-image:
+            linear-gradient(rgba(19,184,174,0.14) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(19,184,174,0.14) 1px, transparent 1px);
+        background-size: 46px 46px;
+        animation: driftGrid 44s linear infinite;
+        pointer-events: none;
+    }
+
+    .grid-overlay::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(rgba(224,169,64,0.55) 1.5px, transparent 1.5px);
+        background-size: 138px 138px;
+        background-position: 23px 23px;
+    }
+
+    .brand-content {
+        position: relative;
+        z-index: 1;
+        max-width: 380px;
+        text-align: left;
+    }
+
+    .brand-content img {
+        width: 88px;
+        height: 88px;
+        margin-bottom: 26px;
+        filter: drop-shadow(0 0 18px rgba(19,184,174,0.35));
+    }
+
+    .brand-content h2 {
+        font-size: 30px;
+        font-weight: 700;
+        color: #f4f8f6;
+        margin-bottom: 10px;
+        letter-spacing: 0.2px;
+    }
+
+    .brand-content .tagline {
+        color: #e0a940;
+        font-size: 15px;
+        font-weight: 600;
+        margin-bottom: 30px;
+    }
+
+    .brand-points {
+        list-style: none;
+    }
+
+    .brand-points li {
+        position: relative;
+        padding-left: 20px;
+        margin-bottom: 16px;
+        color: #a9c0ba;
+        font-size: 14.5px;
+        line-height: 1.5;
+    }
+
+    .brand-points li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 7px;
+        width: 9px;
+        height: 2px;
+        background: #17b299;
+    }
+
+    .form-panel {
+        display: flex;
+        flex: 1 1 58%;
+        align-items: center;
+        justify-content: center;
+        padding: 50px;
+    }
+
+    .login-wrapper {
+        min-height: auto;
+        max-width: 480px;
+        padding: 50px 46px;
+        box-shadow: none;
+        background: rgba(7, 25, 23, 0.55);
+    }
+
+    .header .logo {
+        display: none;
+    }
+
+    .header h1 {
+        font-size: 32px;
+    }
+
+    .header p {
+        font-size: 15px;
+    }
+}
+
+/* =================================
+   MOBILE
+   ================================= */
+
+@media (max-width: 700px) {
+
+    body {
+        padding: 15px;
+        align-items: center;
+    }
+
+    .login-wrapper {
+        min-height: auto;
+
+        padding: 35px 22px 40px;
+
+        border-radius: 22px;
+    }
+
+    .header {
+        margin-bottom: 30px;
+    }
+
+    .header .logo {
+        width: 120px;
+        height: 120px;
+        margin-bottom: 14px;
+    }
+
+    .header h1 {
+        font-size: 32px;
+    }
+
+    .header p {
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .field {
+        margin-bottom: 21px;
+    }
+
+    .field label {
+        font-size: 15px;
+    }
+
+    .field input {
+        height: 56px;
+
+        font-size: 15px;
+
+        border-radius: 14px;
+    }
+
+    .options-row {
+        font-size: 13px;
+
+        margin-bottom: 24px;
+    }
+
+    .primary {
+        height: 57px;
+
+        font-size: 16px;
+
+        border-radius: 14px;
+    }
+
+    .below {
+        font-size: 14px;
+    }
+
+    .back-home a {
+        font-size: 14px;
+    }
+}
+
+/* Small phones */
+@media (max-width: 380px) {
+
+    .login-wrapper {
+        padding: 28px 17px 32px;
+    }
+
+    .header h1 {
+        font-size: 28px;
+    }
+
+    .options-row {
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 14px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="page">
+
+    <!-- Brand panel: only visible on laptop/desktop widths -->
+    <div class="brand-panel">
+        <div class="grid-overlay" aria-hidden="true"></div>
+        <div class="brand-content">
+            <img src="logo.png" alt="GeoNEXA AI">
+            <h2>GeoNEXA AI</h2>
+            <p class="tagline">Connecting the world, spatially.</p>
+            <ul class="brand-points">
+                <li>Land parcel registration and cadastral mapping</li>
+                <li>Property valuation and spatial risk assessment</li>
+                <li>Built on Rwanda's provinces, districts, sectors, cells, and villages</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Form panel -->
+    <div class="form-panel">
+        <div class="login-wrapper">
+
+            <!-- Header -->
+            <div class="header">
+                <img src="logo.png" alt="GeoNEXA AI" class="logo">
+                <h1>Welcome back</h1>
+                <p>Access intelligent land and property information.</p>
+            </div>
+
+            <!-- Status message -->
+            <div id="formStatus" class="form-status"></div>
+
+            <!-- Login form -->
+            <form id="loginForm" novalidate>
+
+                <!-- Email / Phone -->
+                <div class="field">
+                    <label for="identifier">Email Address</label>
+                    <input
+                        type="email"
+                        id="identifier"
+                        name="identifier"
+                        placeholder="Enter your email address"
+                        autocomplete="username"
+                        required
+                    >
+                </div>
+
+                <!-- Password -->
+                <div class="field">
+                    <label for="password">Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Enter your password"
+                        autocomplete="current-password"
+                        required
+                    >
+                </div>
+
+                <!-- Remember / Forgot -->
+                <div class="options-row">
+                    <label>
+                        <input type="checkbox" id="rememberMe" name="rememberMe">
+                        Remember me
+                    </label>
+                    <a href="reset-password.html" id="forgotPassword">Forgot password?</a>
+                </div>
+
+                <!-- Login -->
+                <button type="submit" class="primary" id="submitBtn">
+                    Login to GeoNEXA →
+                </button>
+
+                <!-- Signup -->
+                <p class="below">
+                    Don't have an account?
+                    <a href="signup.html">Create an account</a>
+                </p>
+
+                <!-- Home -->
+                <div class="back-home">
+                    <a href="index.html">← Back to Home</a>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="login.js"></script>
+<script src="./pwa-register.js"></script>
+</body>
+</html>
