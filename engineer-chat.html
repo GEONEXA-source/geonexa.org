@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GeoNEXA AI — Engineer Community Chat</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{
+    --bg:#0a0e14; --sidebar:#0c1119; --panel:#111722; --panel-alt:#0d1420;
+    --border:#1d2733; --text:#e8edf2; --muted:#7c8a99;
+    --teal:#14b8a6; --teal-dim:rgba(20,184,166,0.14);
+    --red:#ef4444;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+  a{color:inherit;text-decoration:none;}
+
+  .topbar{
+    display:flex;align-items:center;gap:12px;padding:14px 18px;
+    background:var(--sidebar);border-bottom:1px solid var(--border);flex-shrink:0;
+  }
+  .back-link{font-size:13px;font-weight:600;color:var(--muted);flex-shrink:0;}
+  .title-block h1{font-size:15px;}
+  .title-block p{font-size:11.5px;color:var(--muted);margin-top:1px;}
+  .presence-dot{width:7px;height:7px;border-radius:50%;background:var(--teal);margin-left:auto;flex-shrink:0;box-shadow:0 0 0 0 rgba(20,184,166,.6);animation:pulse 2s infinite;}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(20,184,166,.5);}70%{box-shadow:0 0 0 7px rgba(20,184,166,0);}100%{box-shadow:0 0 0 0 rgba(20,184,166,0);}}
+
+  .chat-area{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:10px;}
+  .msg-row{display:flex;flex-direction:column;max-width:78%;}
+  .msg-row.me{align-self:flex-end;align-items:flex-end;}
+  .msg-row.them{align-self:flex-start;align-items:flex-start;}
+  .msg-sender{font-size:11px;color:var(--muted);margin-bottom:3px;padding:0 4px;}
+  .msg-bubble{padding:10px 14px;border-radius:14px;font-size:13.5px;line-height:1.5;white-space:pre-wrap;word-break:break-word;}
+  .msg-row.them .msg-bubble{background:var(--panel);border:1px solid var(--border);border-top-left-radius:4px;}
+  .msg-row.me .msg-bubble{background:var(--teal-dim);color:var(--teal);border-top-right-radius:4px;}
+  .msg-time{font-size:10px;color:var(--muted);margin-top:3px;padding:0 4px;}
+
+  .empty-state{margin:auto;text-align:center;color:var(--muted);font-size:13px;padding:30px;}
+  .locked{margin:auto;text-align:center;color:var(--muted);font-size:13px;padding:30px;max-width:320px;}
+
+  .chat-form{display:flex;gap:8px;padding:14px 16px;border-top:1px solid var(--border);background:var(--sidebar);flex-shrink:0;}
+  .chat-input{
+    flex:1;background:var(--panel-alt);border:1px solid var(--border);
+    color:var(--text);padding:11px 14px;border-radius:9px;font-size:13.5px;
+  }
+  .send-btn{
+    background:var(--teal);color:#04231d;border:none;
+    padding:0 18px;border-radius:9px;font-weight:700;font-size:13.5px;cursor:pointer;flex-shrink:0;
+  }
+  .send-btn:disabled{opacity:.55;cursor:default;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back-link" href="engineer-dashboard.html">← Back</a>
+  <div class="title-block">
+    <h1>Engineer Community Chat</h1>
+    <p>Shared room — visible to all subscribed engineers &amp; surveyors</p>
+  </div>
+  <div class="presence-dot"></div>
+</div>
+
+<div class="chat-area" id="chatArea">
+  <div class="empty-state">Loading messages…</div>
+</div>
+
+<form class="chat-form" id="chatForm" style="display:none;">
+  <input type="text" id="chatInput" class="chat-input" placeholder="Message other engineers…" autocomplete="off" maxlength="2000">
+  <button type="submit" class="send-btn" id="sendBtn">Send</button>
+</form>
+
+<script src="config.js"></script>
+<script src="loader.js"></script>
+<script src="engineer-chat.js"></script>
+</body>
+  </html>
+  
