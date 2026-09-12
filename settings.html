@@ -435,4 +435,133 @@
       </div>
 
       <div class="pref-section">
-        <div c
+        <div class="pref-section-head">
+          <h4>Two-Factor Authentication</h4>
+          <p>Require a code from your phone in addition to your password.</p>
+        </div>
+        <div class="pref-row">
+          <div>
+            <div class="pref-row-label">2FA</div>
+            <div class="pref-row-sub">Not available yet — coming in a future update</div>
+          </div>
+          <label class="toggle-switch"><input type="checkbox" disabled><span class="toggle-slider"></span></label>
+        </div>
+      </div>
+
+      <div class="pref-section">
+        <div class="pref-section-head">
+          <h4>Active Sessions</h4>
+          <p>Signed in on a shared or lost device? End every session at once.</p>
+        </div>
+        <button type="button" class="danger-btn" id="signOutAllBtn">Sign out of all devices</button>
+        <p class="security-note" id="signOutAllStatus"></p>
+      </div>
+    </div>
+
+    <!-- Preferences tab -->
+    <div class="tab-pane" id="pane-preferences">
+      <div class="pref-section">
+        <div class="pref-section-head">
+          <h4>Measurement &amp; Display</h4>
+          <p>How numbers and units appear across reports and the map.</p>
+        </div>
+        <div class="pref-row">
+          <div>
+            <div class="pref-row-label">Units</div>
+            <div class="pref-row-sub">Area, distance, and elevation measurements</div>
+          </div>
+          <div class="segmented" id="unitsSegmented">
+            <button type="button" data-value="metric">Metric</button>
+            <button type="button" data-value="imperial">Imperial</button>
+          </div>
+        </div>
+        <div class="pref-row">
+          <div>
+            <div class="pref-row-label">Currency</div>
+            <div class="pref-row-sub">Used in valuation and transaction reports</div>
+          </div>
+          <select class="pref-select" id="fldCurrency">
+            <option value="RWF">RWF — Rwandan Franc</option>
+            <option value="USD">USD — US Dollar</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="pref-section">
+        <div class="pref-section-head">
+          <h4>Language</h4>
+          <p>Interface language for menus and reports.</p>
+        </div>
+        <div class="pref-row">
+          <div>
+            <div class="pref-row-label">Display language</div>
+            <div class="pref-row-sub">Applies across the whole platform</div>
+          </div>
+          <select class="pref-select" id="fldLanguage">
+            <option value="en">English</option>
+            <option value="rw">Kinyarwanda</option>
+            <option value="fr">Français</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="pref-section">
+        <div class="pref-section-head">
+          <h4>Map Defaults</h4>
+          <p>What Map Explorer and the dashboard map show when you open them.</p>
+        </div>
+        <div class="pref-row">
+          <div>
+            <div class="pref-row-label">Default layer</div>
+            <div class="pref-row-sub">Shown when the map first loads</div>
+          </div>
+          <select class="pref-select" id="fldDefaultLayer">
+            <option value="all">All Layers</option>
+            <option value="suitability">Suitability</option>
+            <option value="risk">Risk Zones</option>
+            <option value="infrastructure">Infrastructure</option>
+          </select>
+        </div>
+        <div class="pref-row">
+          <div>
+            <div class="pref-row-label">Default zoom</div>
+            <div class="pref-row-sub">1 = whole country, 18 = street level</div>
+          </div>
+          <div class="zoom-row">
+            <input type="range" id="fldZoom" min="1" max="18" step="1">
+            <span class="zoom-value" id="zoomValue">8</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pref-section">
+        <div class="pref-section-head">
+          <h4>AI Assistant</h4>
+          <p>Behavior of the AI Assistant chat.</p>
+        </div>
+        <div class="pref-row">
+          <div>
+            <div class="pref-row-label">Ground answers in nearby parcel data</div>
+            <div class="pref-row-sub">When off, the assistant gives general guidance only</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="fldGroundedAI" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn-solid" id="savePrefsBtn">Save preferences</button>
+        <span class="save-status" id="prefsSaveStatus"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script src="settings.js"></script>
+<script src="./pwa-register.js"></script>
+<script src="loader.js"></script>
+</body>
+</html>

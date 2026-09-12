@@ -65,4 +65,3 @@ function downloadPDF() {
   setTimeout(() => URL.revokeObjectURL(url), 1500);
 }
 function esc(s) { const d = document.createElement("div"); d.textContent = String(s ?? ""); return d.innerHTML; }
-      

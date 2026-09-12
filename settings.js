@@ -30,6 +30,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   wireAppearance();
   wireNotifications();
   wireSecurity();
+  wireAvatarUpload();
 });
 
 // ---------- Tabs ----------
@@ -62,7 +63,7 @@ async function loadProfile(user) {
   try {
     const { data: profile, error } = await supabaseClient
       .from("profiles")
-      .select("full_name, role, phone_number, organization, country, is_subscribed, subscription_expires_at")
+      .select("full_name, role, phone_number, organization, country, is_subscribed, subscription_expires_at, avatar_url")
       .eq("id", user.id)
       .single();
 
@@ -78,9 +79,8 @@ async function loadProfile(user) {
 
     document.getElementById("profileName").textContent = name;
     document.getElementById("profileRole").textContent = profile.role || "User";
-    document.getElementById("avatarInitial").textContent = name.charAt(0).toUpperCase();
-    document.getElementById("avatarLg").textContent = name.charAt(0).toUpperCase();
     document.getElementById("avatarLgName").textContent = name;
+    setAvatarDisplay(name, profile.avatar_url);
 
     const notExpired = !profile.subscription_expires_at || new Date(profile.subscription_expires_at) > new Date();
     const isSubscribed = !!(profile.is_subscribed && notExpired);
@@ -90,11 +90,110 @@ async function loadProfile(user) {
   } catch (err) {
     console.error("Profile load failed:", err);
     document.getElementById("profileName").textContent = user.email;
-    document.getElementById("avatarInitial").textContent = user.email.charAt(0).toUpperCase();
-    document.getElementById("avatarLg").textContent = user.email.charAt(0).toUpperCase();
-    document.getElementById("avatarLgName").textContent = user.email;
+    setAvatarDisplay(user.email, null);
     document.getElementById("tierPill").textContent = "Unable to load plan";
   }
+}
+
+// Renders either the uploaded photo (object-fit cover, fills the circle)
+// or falls back to the first-letter initial exactly as before.
+function setAvatarDisplay(name, avatarUrl) {
+  const initial = (name || "?").charAt(0).toUpperCase();
+  const targets = [
+    document.getElementById("avatarInitial"),
+    document.getElementById("avatarLg"),
+  ];
+  targets.forEach((el) => {
+    if (!el) return;
+    if (avatarUrl) {
+      el.innerHTML = `<img src="${avatarUrl}" alt="Profile photo">`;
+    } else {
+      el.textContent = initial;
+    }
+  });
+}
+
+// ---------- Avatar upload ----------
+function wireAvatarUpload() {
+  const fileInput = document.getElementById("avatarFileInput");
+  const pickBtn = document.getElementById("avatarPickBtn");
+  const statusEl = document.getElementById("avatarUploadStatus");
+  if (!fileInput || !pickBtn) return;
+
+  pickBtn.addEventListener("click", () => fileInput.click());
+
+  fileInput.addEventListener("change", async () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      if (statusEl) { statusEl.style.color = "var(--red)"; statusEl.textContent = "Please choose an image file."; }
+      return;
+    }
+
+    if (statusEl) { statusEl.style.color = "var(--muted)"; statusEl.textContent = "Preparing photo…"; }
+    if (window.showLoader) showLoader("Uploading photo…");
+
+    try {
+      const resizedBlob = await resizeImage(file, 320, 0.82);
+      const path = `${currentUserId}/avatar.jpg`;
+
+      const { error: uploadError } = await supabaseClient.storage
+        .from("avatars")
+        .upload(path, resizedBlob, { upsert: true, contentType: "image/jpeg" });
+      if (uploadError) throw uploadError;
+
+      const { data: publicUrlData } = supabaseClient.storage.from("avatars").getPublicUrl(path);
+      // Cache-bust so the new photo shows immediately instead of a stale cached version.
+      const avatarUrl = `${publicUrlData.publicUrl}?t=${Date.now()}`;
+
+      const { error: updateError } = await supabaseClient
+        .from("profiles")
+        .update({ avatar_url: avatarUrl })
+        .eq("id", currentUserId);
+      if (updateError) throw updateError;
+
+      const name = document.getElementById("fldFullName").value || document.getElementById("fldEmail").value;
+      setAvatarDisplay(name, avatarUrl);
+
+      if (statusEl) { statusEl.style.color = "var(--green)"; statusEl.textContent = "Photo updated."; }
+      setTimeout(() => { if (statusEl) statusEl.textContent = ""; }, 2500);
+    } catch (err) {
+      console.error("Avatar upload failed:", err);
+      if (statusEl) { statusEl.style.color = "var(--red)"; statusEl.textContent = "Couldn't upload: " + (err.message || err); }
+    } finally {
+      if (window.hideLoader) hideLoader();
+      fileInput.value = "";
+    }
+  });
+}
+
+// Downscales an image client-side before upload — keeps avatars small and
+// fast to load/send on mobile data, since nothing here needs full resolution.
+function resizeImage(file, maxDimension, quality) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const reader = new FileReader();
+    reader.onload = () => { img.src = reader.result; };
+    reader.onerror = reject;
+    img.onload = () => {
+      let { width, height } = img;
+      if (width > height && width > maxDimension) {
+        height = Math.round(height * (maxDimension / width));
+        width = maxDimension;
+      } else if (height > maxDimension) {
+        width = Math.round(width * (maxDimension / height));
+        height = maxDimension;
+      }
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      canvas.getContext("2d").drawImage(img, 0, 0, width, height);
+      canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error("Could not process image"))), "image/jpeg", quality);
+    };
+    img.onerror = reject;
+    reader.readAsDataURL(file);
+  });
 }
 
 // ---------- Preferences ----------
@@ -234,10 +333,10 @@ async function handleSave(e) {
     // Reflect the new name immediately in the top bar without a reload
     const name = updates.full_name || document.getElementById("fldEmail").value;
     document.getElementById("profileName").textContent = name;
-    document.getElementById("avatarInitial").textContent = name.charAt(0).toUpperCase();
-    document.getElementById("avatarLg").textContent = name.charAt(0).toUpperCase();
     document.getElementById("avatarLgName").textContent = name;
     document.getElementById("profileRole").textContent = updates.role || "User";
+    const currentImg = document.getElementById("avatarLg").querySelector("img");
+    setAvatarDisplay(name, currentImg ? currentImg.src : null);
 
     setTimeout(() => { statusEl.textContent = ""; }, 2500);
   } catch (err) {
@@ -508,4 +607,4 @@ async function handleSignOutAll() {
     btn.disabled = false;
     if (window.hideLoader) hideLoader();
   }
-                          }
+}

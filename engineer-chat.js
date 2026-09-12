@@ -4,6 +4,7 @@
 let session = null;
 let profile = null;
 let senderName = "Engineer";
+let senderAvatarUrl = null;
 let realtimeChannel = null;
 let isAdmin = false;
 
@@ -22,7 +23,7 @@ async function init() {
 
   const p = await supabaseClient
     .from("profiles")
-    .select("full_name, role, user_type, is_subscribed, subscription_expires_at")
+    .select("full_name, role, user_type, is_subscribed, subscription_expires_at, avatar_url")
     .eq("id", session.user.id)
     .single();
 
@@ -52,6 +53,7 @@ async function init() {
   }
 
   senderName = isAdmin ? `${profile.full_name || session.user.email} (Admin)` : (profile.full_name || session.user.email || "Engineer");
+  senderAvatarUrl = profile.avatar_url || null;
 
   if (isAdmin) {
     const title = document.querySelector(".title-block p");
@@ -119,11 +121,22 @@ function renderMessage(m) {
     : "";
   const badge = isAnnouncement ? `<span class="announce-badge">📣 Announcement</span>` : "";
 
+  const initial = (m.sender_name || "E").charAt(0).toUpperCase();
+  const avatarHTML = m.sender_avatar_url
+    ? `<img src="${m.sender_avatar_url}" alt="">`
+    : initial;
+  const avatarEl = !isMe ? `<div class="msg-avatar">${avatarHTML}</div>` : "";
+
   row.innerHTML = `
-    ${!isMe ? `<div class="msg-sender">${escapeHTML(m.sender_name || "Engineer")}</div>` : ""}
-    ${badge}
-    <div class="msg-bubble">${escapeHTML(m.message)}</div>
-    <div class="msg-time">${time}${deleteBtn}</div>
+    <div class="msg-line">
+      ${avatarEl}
+      <div class="msg-content">
+        ${!isMe ? `<div class="msg-sender">${escapeHTML(m.sender_name || "Engineer")}</div>` : ""}
+        ${badge}
+        <div class="msg-bubble">${escapeHTML(m.message)}</div>
+        <div class="msg-time">${time}${deleteBtn}</div>
+      </div>
+    </div>
   `;
   area.appendChild(row);
 
@@ -163,6 +176,7 @@ function wireForm() {
       const { error } = await supabaseClient.from("engineer_messages").insert({
         sender_id: session.user.id,
         sender_name: senderName,
+        sender_avatar_url: senderAvatarUrl,
         recipient_id: null, // shared room for now — DMs will set this later
         message: text,
         is_announcement: isAnnouncement,
@@ -220,4 +234,3 @@ function escapeHTML(str) {
 window.addEventListener("beforeunload", () => {
   if (realtimeChannel) supabaseClient.removeChannel(realtimeChannel);
 });
-    

@@ -73,4 +73,3 @@
   }
   global.GeoNexaPDF = { makePDF };
 })(window);
-                       

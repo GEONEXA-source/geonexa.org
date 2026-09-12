@@ -62,7 +62,7 @@ async function guardAndLoadUser() {
   try {
     const profilePromise = supabaseClient
       .from("profiles")
-      .select("full_name, role, user_type")
+      .select("full_name, role, user_type, avatar_url")
       .eq("id", currentUser.id)
       .single();
 
@@ -119,7 +119,13 @@ function applyProfileDisplay(email, profile) {
 
   if (nameEl) nameEl.textContent = nameToShow;
   if (roleEl) roleEl.textContent = (profile && (profile.role || profile.user_type)) || "User";
-  if (avatarEl) avatarEl.textContent = nameToShow.charAt(0).toUpperCase();
+  if (avatarEl) {
+    if (profile && profile.avatar_url) {
+      avatarEl.innerHTML = `<img src="${profile.avatar_url}" alt="Profile photo">`;
+    } else {
+      avatarEl.textContent = nameToShow.charAt(0).toUpperCase();
+    }
+  }
 
   const usersLink = document.getElementById("navUsersAccess");
   if (usersLink) usersLink.style.display = (profile && profile.role === "admin") ? "" : "none";
@@ -510,4 +516,3 @@ function initMap() {
     setSelectedLocation(e.latlng.lat, e.latlng.lng);
   });
 }
-  

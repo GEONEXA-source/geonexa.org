@@ -222,5 +222,4 @@ function wirePaywallModal() {
       window.location.href = "subscription.html";
     }
   });
-    }
-    
+}

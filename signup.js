@@ -87,4 +87,3 @@ signupForm.addEventListener("submit", async (e) => {
         window.location.href = "login.html";
     }, 2500);
 });
-  

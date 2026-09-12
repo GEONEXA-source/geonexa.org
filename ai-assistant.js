@@ -32,4 +32,3 @@ async function sendMessage(e){e.preventDefault();const input=document.getElement
 function append(role,text){const row=document.createElement("div");row.className=`msg ${role}`;row.textContent=text;document.getElementById("chatLog").appendChild(row);document.getElementById("chatLog").scrollTop=999999;return row;}
 function generateReport(){if(!latestAnalysis?.reply){const raw=sessionStorage.getItem("geonexa_latest_ai_analysis");if(raw)try{latestAnalysis=JSON.parse(raw)}catch(_){} }if(latestAnalysis?.reply){sessionStorage.setItem("geonexa_report_payload",JSON.stringify(latestAnalysis));location.href="ai-report.html";}}
 function esc(s){const d=document.createElement("div");d.textContent=String(s??"");return d.innerHTML;}
-    
