@@ -1,7 +1,7 @@
 // GeoNEXA AI — Login logic (rate-limited via secure-login Edge Function)
 
 // ⚠️ Update this to match your actual Supabase project ref if it ever changes.
-const SECURE_LOGIN_ENDPOINT = "https://ogwckglzluhjwmucrodb.supabase.co/functions/v1/secure-login";
+const SECURE_LOGIN_ENDPOINT = "https://ogwckglzluhjwmucrodb.supabase.co/functions/v1/super-service";
 
 const loginForm = document.getElementById("loginForm");
 const formStatus = document.getElementById("formStatus");
