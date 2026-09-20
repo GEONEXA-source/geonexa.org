@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GeoNEXA AI — Subscription</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://ogwckglzluhjwmucrodb.supabase.co" crossorigin>
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{
+    --bg:#080b0f;
+    --panel:#0f151c;
+    --panel-2:#121a22;
+    --border:#1d2833;
+    --border-soft:#161f28;
+    --text:#f3f6f8;
+    --muted:#8b99a6;
+    --accent:#22e0ab;
+    --accent-dim:#16a97f;
+    --accent-glow:rgba(34,224,171,0.16);
+    --danger:#ff6b6b;
+    --radius-lg:18px;
+    --radius-md:12px;
+    --radius-sm:8px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1100px 500px at 15% -10%, rgba(34,224,171,0.08), transparent 60%),
+      radial-gradient(900px 500px at 100% 0%, rgba(34,160,224,0.06), transparent 55%),
+      var(--bg);
+    color:var(--text);
+    font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    min-height:100vh;
+    padding-bottom:60px;
+  }
+
+  header{
+    position:sticky; top:0; z-index:20;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 24px;
+    background:rgba(8,11,15,0.85);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--border-soft);
+  }
+  .back-btn{
+    background:var(--panel-2); border:1px solid var(--border); color:var(--text);
+    border-radius:10px; width:38px; height:38px; font-size:16px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; transition:.15s ease;
+  }
+  .back-btn:hover{border-color:var(--accent); color:var(--accent); transform:translateX(-2px);}
+  .logo{display:flex; align-items:center; gap:10px; font-weight:800; font-size:15px; letter-spacing:.02em;}
+  .logo img{width:28px; height:28px; border-radius:7px;}
+  .header-left{display:flex; align-items:center; gap:14px;}
+  .checkout-badge{
+    font-size:11px; letter-spacing:.1em; color:var(--muted); text-transform:uppercase;
+    display:flex; align-items:center; gap:6px; border:1px solid var(--border); padding:6px 12px; border-radius:20px;
+  }
+  .checkout-badge .dot{width:6px; height:6px; border-radius:50%; background:var(--accent); box-shadow:0 0 8px var(--accent);}
+
+  main{max-width:1080px; margin:0 auto; padding:48px 24px 0;}
+
+  .eyebrow{color:var(--accent); font-size:12px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; margin-bottom:10px;}
+  h1{font-size:clamp(28px,4vw,42px); font-weight:800; margin:0 0 12px; letter-spacing:-0.02em; line-height:1.1;}
+  .subtitle{color:var(--muted); font-size:15px; max-width:560px; line-height:1.6; margin:0;}
+
+  .top-row{display:flex; align-items:flex-start; justify-content:space-between; gap:24px; flex-wrap:wrap; margin-bottom:32px;}
+  .currency-chip{
+    flex-shrink:0; border:1px solid var(--border); border-radius:var(--radius-md); padding:12px 18px;
+    background:var(--panel); text-align:right;
+  }
+  .currency-chip .code{color:var(--accent); font-weight:800; font-size:16px;}
+  .currency-chip .name{color:var(--muted); font-size:11px; margin-top:2px;}
+
+  .tabs{display:inline-flex; background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:4px; margin-bottom:28px;}
+  .tab{
+    border:none; background:transparent; color:var(--muted); font-weight:600; font-size:13px;
+    padding:9px 20px; border-radius:9px; cursor:pointer; transition:.15s ease;
+  }
+  .tab.active{background:var(--accent); color:#06120e;}
+
+  .plans{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:16px; margin-bottom:36px;}
+  .plan{
+    background:var(--panel); border:1px solid var(--border); border-radius:var(--radius-lg);
+    padding:24px; position:relative; cursor:pointer; transition:.18s ease; outline:2px solid transparent; outline-offset:0;
+  }
+  .plan:hover{border-color:var(--accent-dim); transform:translateY(-2px);}
+  .plan.selected{outline-color:var(--accent); box-shadow:0 0 0 1px var(--accent), 0 12px 32px -12px var(--accent-glow); background:var(--panel-2);}
+  .plan-badge{
+    position:absolute; top:-11px; right:20px; background:var(--accent); color:#06120e;
+    font-size:10px; font-weight:800; letter-spacing:.05em; text-transform:uppercase; padding:4px 10px; border-radius:20px;
+  }
+  .plan-tag{font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:14px;}
+  .plan-amount{font-size:30px; font-weight:800; letter-spacing:-0.02em;}
+  .plan-amount .unit{font-size:14px; font-weight:600; color:var(--muted); margin-left:4px;}
+  .plan-cycle{color:var(--accent); font-size:12px; font-weight:600; margin:2px 0 10px;}
+  .plan-desc{color:var(--muted); font-size:13px; line-height:1.5; margin-bottom:16px; min-height:36px;}
+  .plan-features{list-style:none; margin:0 0 20px; padding:0; border-top:1px solid var(--border-soft); padding-top:14px;}
+  .plan-features li{font-size:13px; color:#cdd8df; padding:5px 0; display:flex; align-items:flex-start; gap:8px;}
+  .plan-features li svg{flex-shrink:0; margin-top:2px;}
+  .continue-btn{
+    width:100%; padding:11px; border-radius:10px; border:1px solid var(--border); background:transparent;
+    color:var(--text); font-weight:700; font-size:13px; cursor:pointer; transition:.15s ease;
+  }
+  .plan.selected .continue-btn, .continue-btn.primary{background:var(--accent); color:#06120e; border-color:var(--accent);}
+  .continue-btn:hover{border-color:var(--accent);}
+
+  .institution-card{
+    background:var(--panel); border:1px solid var(--border); border-radius:var(--radius-lg); padding:28px;
+    display:grid; grid-template-columns:1.4fr 1fr; gap:24px; align-items:center; margin-bottom:36px;
+  }
+  .institution-card h3{margin:0 0 8px; font-size:19px;}
+  .institution-card p{color:var(--muted); font-size:13px; line-height:1.6; margin:0;}
+  .device-select label{display:block; font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-bottom:6px;}
+  select, .institution-card select{
+    width:100%; background:var(--panel-2); border:1px solid var(--border); color:var(--text);
+    padding:10px 12px; border-radius:9px; font-size:14px; font-family:inherit;
+  }
+  .total-row{display:flex; justify-content:space-between; align-items:baseline; margin:16px 0;}
+  .total-row .label{color:var(--muted); font-size:12px;}
+  .total-row .value{font-size:22px; font-weight:800; color:var(--accent);}
+
+  .section-title{font-size:12px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin:0 0 14px;}
+  .providers{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px;}
+  .provider{
+    border:1px solid var(--border); border-radius:var(--radius-md); padding:18px;
+    cursor:pointer; transition:.15s ease; background:var(--panel); display:flex; flex-direction:column; gap:8px;
+  }
+  .provider:hover{border-color:var(--accent-dim); transform:translateY(-1px);}
+  .provider.selected{border-color:var(--accent); background:var(--panel-2); box-shadow:0 0 0 1px var(--accent);}
+  .provider .p-icon{width:26px; height:26px; color:var(--accent);}
+  .provider .p-name{font-weight:700; font-size:14px;}
+  .provider .p-type{color:var(--muted); font-size:11px;}
+  .providers.busy{opacity:.55; pointer-events:none;}
+
+  .status-line{
+    margin-top:18px; padding:14px 16px; border-radius:10px; font-size:14px; font-weight:600;
+    min-height:20px; background:var(--panel); border:1px solid var(--border); color:var(--muted);
+  }
+  .status-line:empty{display:none;}
+  .status-line.error{background:rgba(255,107,107,0.08); border-color:var(--danger); color:#ff9c9c;}
+  .status-line.ok{background:var(--accent-glow); border-color:var(--accent); color:var(--accent);}
+  .status-line.error::before{content:"⚠ ";}
+  .status-line.ok::before{content:"✓ ";}
+
+  .trust-note{display:flex; align-items:center; gap:8px; color:var(--muted); font-size:12px; margin-top:28px;}
+  .trust-note svg{color:var(--accent);}
+
+  @media (max-width:640px){
+    .institution-card{grid-template-columns:1fr;}
+    main{padding-top:32px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <button class="back-btn" aria-label="Back"
+      onclick="if (window.history.length > 1) { history.back(); } else { window.location.href = 'dashboard.html'; }">←</button>
+    <div class="logo"><img src="assets/geonexa-logo.png" alt="GeoNEXA AI" onerror="this.style.display='none'"> GEONEXA AI</div>
+  </div>
+  <div class="checkout-badge"><span class="dot"></span>Secure Checkout</div>
+</header>
+
+<main>
+  <div class="top-row">
+    <div>
+      <div class="eyebrow">GeoNEXA AI Subscription</div>
+      <h1>Choose your land intelligence plan.</h1>
+      <p class="subtitle">Securely subscribe in Rwandan Francs and unlock GeoNEXA AI property analysis, spatial intelligence, risk insights and reports.</p>
+    </div>
+    <div class="currency-chip">
+      <div class="code">RWF</div>
+      <div class="name">Rwandan Franc</div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" id="tabIndividual">Individual</button>
+    <button class="tab" id="tabInstitution">Institution</button>
+  </div>
+
+  <section class="plans" id="individualPlans">
+    <div class="plan" data-plan="weekly" data-amount="3000" data-cycle="week" onclick="selectPlan(event,this)">
+      <div class="plan-tag">Weekly · Flexible</div>
+      <div class="plan-amount">3,000<span class="unit">RWF</span></div>
+      <div class="plan-cycle">per week</div>
+      <div class="plan-desc">Short-term land and property decisions.</div>
+      <ul class="plan-features">
+        <li>✓ Property information</li>
+        <li>✓ Map Explorer</li>
+        <li>✓ Suitability overview</li>
+        <li>✓ Risk overview</li>
+        <li>✓ AI land insights</li>
+      </ul>
+      <button class="continue-btn" type="button">Continue</button>
+    </div>
+
+    <div class="plan popular" data-plan="monthly" data-amount="10000" data-cycle="month" onclick="selectPlan(event,this)">
+      <div class="plan-badge">Best value</div>
+      <div class="plan-tag">Monthly</div>
+      <div class="plan-amount">10,000<span class="unit">RWF</span></div>
+      <div class="plan-cycle">per month</div>
+      <div class="plan-desc">Regular users who need deeper land intelligence.</div>
+      <ul class="plan-features">
+        <li>✓ Everything in Weekly</li>
+        <li>✓ Full property analysis</li>
+        <li>✓ Advanced risk assessment</li>
+        <li>✓ AI explanations</li>
+        <li>✓ Reports and saved properties</li>
+      </ul>
+      <button class="continue-btn" type="button">Continue</button>
+    </div>
+
+    <div class="plan" data-plan="annual" data-amount="110000" data-cycle="year" onclick="selectPlan(event,this)">
+      <div class="plan-tag">Annual · Save more</div>
+      <div class="plan-amount">110,000<span class="unit">RWF</span></div>
+      <div class="plan-cycle">per year</div>
+      <div class="plan-desc">Continuous access for frequent GeoNEXA AI users.</div>
+      <ul class="plan-features">
+        <li>✓ Everything in Monthly</li>
+        <li>✓ Year-round access</li>
+        <li>✓ Priority analysis</li>
+        <li>✓ Full reporting tools</li>
+        <li>✓ Best annual value</li>
+      </ul>
+      <button class="continue-btn" type="button">Continue</button>
+    </div>
+  </section>
+
+  <section class="institution-card" id="institutionPlan" style="display:none;">
+    <div>
+      <h3>One plan for your team.</h3>
+      <p>90,000 RWF per month for every 10 electronic devices. Choose the number of devices your institution needs.</p>
+    </div>
+    <div>
+      <div class="device-select">
+        <label>Electronic devices</label>
+        <select id="deviceCount" onchange="updateInstitutionTotal()">
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="30">30</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+      </div>
+      <div class="total-row">
+        <span class="label">Monthly total</span>
+        <span class="value" id="institutionTotal">90,000 RWF</span>
+      </div>
+      <button class="continue-btn primary" type="button" onclick="selectInstitutionPlan(this)">Continue</button>
+    </div>
+  </section>
+
+  <div class="section-title">Payment method</div>
+  <div class="providers" id="providers">
+    <div class="provider" data-provider="mtn_momo" onclick="selectProvider(this)">
+      <svg class="p-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18.01"/></svg>
+      <div class="p-name">MTN MoMo</div>
+      <div class="p-type">Mobile Money</div>
+    </div>
+    <div class="provider" data-provider="airtel_money" onclick="selectProvider(this)">
+      <svg class="p-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18.01"/></svg>
+      <div class="p-name">Airtel Money</div>
+      <div class="p-type">Mobile Money</div>
+    </div>
+    <div class="provider" data-provider="card" onclick="selectProvider(this)">
+      <svg class="p-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+      <div class="p-name">Visa / Mastercard</div>
+      <div class="p-type">Cards</div>
+    </div>
+    <div class="provider" data-provider="flutterwave" onclick="selectProvider(this)">
+      <svg class="p-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg>
+      <div class="p-name">Flutterwave</div>
+      <div class="p-type">Secure gateway</div>
+    </div>
+  </div>
+
+  <div class="status-line" id="statusLine"></div>
+
+  <div class="trust-note">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    Payments are processed securely — GeoNEXA never stores your card or mobile money PIN.
+  </div>
+</main>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const SUPABASE_URL = "https://ogwckglzluhjwmucrodb.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9nd2NrZ2x6bHVoandtdWNyb2RiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0NDgyNjQsImV4cCI6MjEwMjAyNDI2NH0.kbRoGMj9qjbFKkIzoO3iaz4baRCJX1w04lexpV7-DIc";
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  let selectedPlan = null;
+  let selectedProvider = null;
+
+  const statusLine = document.getElementById('statusLine');
+
+  document.getElementById('tabIndividual').onclick = () => switchTab('individual');
+  document.getElementById('tabInstitution').onclick = () => switchTab('institution');
+
+  function switchTab(which){
+    const isIndividual = which === 'individual';
+    document.getElementById('tabIndividual').classList.toggle('active', isIndividual);
+    document.getElementById('tabInstitution').classList.toggle('active', !isIndividual);
+    document.getElementById('individualPlans').style.display = isIndividual ? 'grid' : 'none';
+    document.getElementById('institutionPlan').style.display = isIndividual ? 'none' : 'grid';
+  }
+
+  window.updateInstitutionTotal = function(){
+    const devices = parseInt(document.getElementById('deviceCount').value, 10);
+    const total = Math.ceil(devices / 10) * 90000;
+    document.getElementById('institutionTotal').textContent = total.toLocaleString('en-US') + ' RWF';
+  };
+
+  window.selectPlan = function(evt, el){
+    if (evt.target.closest('.continue-btn') === null && evt.target !== el) {
+      // clicked inside card but not the button — still select it
+    }
+    selectedPlan = {
+      plan: el.dataset.plan,
+      amount: parseInt(el.dataset.amount, 10),
+      cycle: el.dataset.cycle
+    };
+    document.querySelectorAll('.plan').forEach(p => p.classList.remove('selected'));
+    el.classList.add('selected');
+    setStatus(`Selected ${selectedPlan.plan} plan — ${selectedPlan.amount.toLocaleString()} RWF/${selectedPlan.cycle}. Choose a payment method below.`);
+  };
+
+  window.selectInstitutionPlan = function(){
+    const devices = parseInt(document.getElementById('deviceCount').value, 10);
+    const amount = Math.ceil(devices / 10) * 90000;
+    selectedPlan = { plan: 'institution', amount, cycle: 'month', devices };
+    setStatus(`Selected institution plan — ${devices} devices, ${amount.toLocaleString()} RWF/month. Choose a payment method below.`);
+  };
+
+  window.selectProvider = function(el){
+    const providersEl = document.getElementById('providers');
+    if (providersEl.classList.contains('busy')) return;
+    document.querySelectorAll('.provider').forEach(p => p.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedProvider = el.dataset.provider;
+    providersEl.classList.add('busy');
+    attemptCheckout().finally(() => providersEl.classList.remove('busy'));
+  };
+
+  function setStatus(msg, type=''){
+    statusLine.textContent = msg;
+    statusLine.className = 'status-line' + (type ? ' ' + type : '');
+  }
+
+  async function attemptCheckout(){
+    if (!selectedPlan){
+      setStatus('Pick a plan first, then a payment method.', 'error');
+      return;
+    }
+    setStatus('Starting payment…');
+
+    try {
+      const { data: userData, error: userErr } = await supabase.auth.getUser();
+      if (userErr || !userData?.user) {
+        setStatus('Please log in before subscribing.', 'error');
+        return;
+      }
+      const user = userData.user;
+
+      const { data: payment, error: insertErr } = await supabase
+        .schema('cadastral')
+        .from('payments')
+        .insert({
+          user_id: user.id,
+          plan: selectedPlan.plan,
+          amount: selectedPlan.amount,
+          currency: 'RWF',
+          billing_cycle: selectedPlan.cycle,
+          provider: selectedProvider,
+          devices: selectedPlan.devices || null,
+          status: 'pending'
+        })
+        .select()
+        .single();
+
+      if (insertErr) {
+        setStatus('Could not start checkout: ' + insertErr.message, 'error');
+        return;
+      }
+
+      let fnName;
+      if (selectedProvider === 'mtn_momo') fnName = 'mtn-momo-initiate';
+      else if (selectedProvider === 'airtel_money') fnName = 'airtel-money-initiate';
+      else if (selectedProvider === 'flutterwave') fnName = 'flutterwave-initiate';
+      else fnName = 'card-checkout-initiate';
+
+      const { data: fnResult, error: fnErr } = await supabase.functions.invoke(fnName, {
+        body: { payment_id: payment.id }
+      });
+
+      if (fnErr) {
+        let detail = fnErr.message;
+        // supabase-js hides the actual response body behind fnErr.context —
+        // pull the real error message out of it so we can see what's wrong.
+        if (fnErr.context && typeof fnErr.context.json === 'function') {
+          try {
+            const body = await fnErr.context.json();
+            detail = body?.error || detail;
+          } catch (_) {
+            try { detail = await fnErr.context.text() || detail; } catch (_) {}
+          }
+        }
+        setStatus('Payment provider error (' + fnName + '): ' + detail, 'error');
+        return;
+      }
+
+      if (fnResult?.redirect_url) {
+        window.location.href = fnResult.redirect_url;
+      } else {
+        setStatus('Payment request sent — check your phone to approve.', 'ok');
+      }
+
+    } catch (err) {
+      setStatus('Unexpected error: ' + err.message, 'error');
+    }
+  }
+});
+</script>
+
+</body>
+</html>

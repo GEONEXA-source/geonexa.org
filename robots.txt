@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard.html
+Disallow: /admin-panel.html
+Disallow: /engineer-panel.html
+Disallow: /engineer-panel-hub.html
+Disallow: /engineer-chat.html
+Disallow: /ai-assistant.html
+Disallow: /ai-report.html
+Disallow: /reports.html
+Disallow: /saved-properties.html
+Disallow: /settings.html
+
+Sitemap: https://geonexa.org/sitemap.xml

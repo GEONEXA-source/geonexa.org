@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GeoNEXA AI — Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#080b0f; --panel:#0f151c; --border:#1d2833; --text:#f3f6f8; --muted:#8b99a6;
+    --accent:#22e0ab; --accent-dim:#16a97f;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    background:radial-gradient(900px 460px at 100% -10%, rgba(34,224,171,0.06), transparent 55%), var(--bg);
+    color:var(--text); min-height:100vh; padding:24px 20px 60px;
+  }
+  a{color:var(--accent);text-decoration:none;}
+  .wrap{max-width:680px;margin:0 auto;}
+  .back{font-size:12.5px;color:var(--muted);display:inline-block;margin-bottom:18px;}
+  .letterhead{display:flex;align-items:center;gap:10px;margin-bottom:22px;}
+  .mark{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#0d9488);display:flex;align-items:center;justify-content:center;font-weight:800;color:#06120e;}
+  .brandname{font-weight:800;font-size:15px;}
+  .brandtag{font-size:10px;color:var(--muted);}
+  h1{font-size:20px;font-weight:800;margin-bottom:4px;}
+  .meta{font-size:12px;color:var(--muted);margin-bottom:24px;}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:16px;}
+  .card h3{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px;text-transform:uppercase;letter-spacing:.03em;}
+  .card p{font-size:13.5px;line-height:1.7;color:#dbe3e8;white-space:pre-wrap;}
+  .location-line{font-size:12.5px;color:var(--muted);line-height:1.7;}
+  .actions{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;}
+  .btn-solid{background:var(--accent);color:#06120e;border:none;padding:11px 20px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;}
+  .btn-outline{background:transparent;color:var(--text);border:1px solid var(--border);padding:11px 20px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;}
+  .empty-state{text-align:center;padding:60px 16px;color:var(--muted);}
+  .empty-state .icon{font-size:30px;margin-bottom:10px;}
+  .disclaimer{font-size:11px;color:var(--muted);margin-top:24px;line-height:1.6;border-top:1px solid var(--border);padding-top:14px;}
+
+  @media print {
+    body{background:#fff;color:#000;padding:0;}
+    .back,.actions{display:none !important;}
+    .card{background:#fff;border:1px solid #ccc;}
+    .card p, .location-line{color:#000;}
+    .disclaimer{color:#555;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap" id="wrap">
+  <a class="back" href="ai-assistant.html">← Back to AI Assistant</a>
+
+  <div id="content">
+    <div class="empty-state"><p>Loading report…</p></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const raw = sessionStorage.getItem("geonexa_report_payload");
+  const content = document.getElementById("content");
+
+  if (!raw) {
+    content.innerHTML = `
+      <div class="empty-state">
+        <div class="icon">📄</div>
+        <p>No report data found. Ask the AI Assistant a question first, then tap "Generate PDF Report".</p>
+        <a class="btn-solid" href="ai-assistant.html" style="text-decoration:none;">Go to AI Assistant →</a>
+      </div>`;
+    return;
+  }
+
+  let data;
+  try { data = JSON.parse(raw); } catch (e) {
+    content.innerHTML = `<div class="empty-state"><p>Report data was corrupted. Please generate it again.</p></div>`;
+    return;
+  }
+
+  const esc = (s) => { const d = document.createElement("div"); d.textContent = String(s ?? ""); return d.innerHTML; };
+  const date = data.timestamp ? new Date(data.timestamp).toLocaleString() : new Date().toLocaleString();
+  const loc = data.location;
+
+  content.innerHTML = `
+    <div class="letterhead">
+      <div class="mark">G</div>
+      <div>
+        <div class="brandname">GeoNEXA AI</div>
+        <div class="brandtag">Connecting the World, Spatial Sense</div>
+      </div>
+    </div>
+    <h1>AI Analysis Report</h1>
+    <div class="meta">Generated ${esc(date)}</div>
+
+    ${loc ? `
+    <div class="card">
+      <h3>Location</h3>
+      <div class="location-line">
+        <b>${esc(loc.label || "Selected location")}</b><br>
+        ${loc.lat != null ? `Lat ${Number(loc.lat).toFixed(5)} · Lng ${Number(loc.lng).toFixed(5)}<br>` : ""}
+        ${loc.parcel?.upi ? `UPI: <b>${esc(loc.parcel.upi)}</b>` : ""}
+      </div>
+    </div>` : ""}
+
+    <div class="card">
+      <h3>Question</h3>
+      <p>${esc(data.message || "—")}</p>
+    </div>
+
+    <div class="card">
+      <h3>AI Analysis</h3>
+      <p>${esc(data.reply || "—")}</p>
+    </div>
+
+    <div class="disclaimer">
+      This report is AI-generated and provided for informational purposes only. It is not a substitute for official records from Rwanda's National Land Authority. Verify critical decisions through official channels.
+    </div>
+
+    <div class="actions">
+      <button class="btn-solid" onclick="window.print()">🖨️ Save as PDF</button>
+      <a class="btn-outline" href="ai-assistant.html" style="text-decoration:none;text-align:center;">Ask another question</a>
+    </div>
+  `;
+})();
+</script>
+</body>
+</html>
